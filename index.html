@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>レシピカンペ</title>
-<meta name="description" content="カクテルのレシピを、分量ゲージで一目で確認できるメモアプリ">
+<meta name="description" content="カクテルのレシピを、分量の目盛りで一目で確認できるメモアプリ">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#14161a" media="(prefers-color-scheme: dark)">
@@ -46,14 +46,14 @@ button{cursor:pointer}
 
 /* ---------- header ---------- */
 .top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
-.top-in{max-width:1180px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.top-in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
 .top h1{margin:0;font-size:1.15rem;font-weight:600;letter-spacing:.04em;white-space:nowrap}
 .search{flex:1;min-width:0}
 .search input{width:100%;height:42px;border:1px solid var(--line);border-radius:21px;padding:0 16px;background:var(--surface)}
 .icon-btn{flex:none;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-size:1.2rem;line-height:1;display:grid;place-items:center}
 
 /* ---------- filters ---------- */
-main{max-width:1180px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
+main{max-width:1100px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
 .filters{padding:14px 0 4px;display:grid;gap:10px}
 .frow{display:flex;gap:10px;align-items:flex-start}
 .fl{flex:none;width:5.2em;font-size:.8rem;color:var(--muted);padding-top:7px}
@@ -79,19 +79,21 @@ details.ing[open] summary::after{content:"▴"}
 /* ---------- list ---------- */
 .section{margin-top:22px}
 .section h2{margin:0 0 10px;font-size:clamp(1.7rem,5.5vw,2.4rem);font-weight:300;letter-spacing:.06em;line-height:1.25}
-.grid{display:grid;grid-template-columns:1fr;gap:12px 32px}
-@media(min-width:1100px){.grid{grid-template-columns:1fr 1fr}}
+.grid{display:grid;grid-template-columns:1fr;gap:26px}
 .card{display:grid;grid-template-columns:1fr;gap:6px;width:100%;padding:0;margin:0;border:none;background:none;text-align:left;align-items:center}
-@media(min-width:560px){.card{grid-template-columns:minmax(150px,36%) minmax(0,1fr);gap:14px}}
+@media(min-width:560px){.card{grid-template-columns:minmax(170px,26%) minmax(0,1fr);gap:22px}}
 .nm{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
 @media(min-width:560px){.nm{display:block}}
-.nm b{font-size:1.2rem;font-weight:400;line-height:1.3}
+.nm b{font-size:1.3rem;font-weight:400;line-height:1.3}
+@media(min-width:560px){.nm b{font-size:1.55rem}.nm small{font-size:.9rem}}
 .nm small{display:block;font-size:.8rem;color:var(--muted)}
 @media(max-width:559px){.nm small{display:inline}}
-.star{margin-right:.1em}
-.box{border:2px dotted var(--accent);padding:10px 12px;container-type:inline-size;min-width:0;background:var(--surface);transition:background .15s}
+.tg{flex-basis:100%;margin-top:6px;display:flex;flex-wrap:wrap;gap:4px}
+.tg span{font-size:.75rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 9px;line-height:1.7}
+.box{border:2px dotted var(--accent);padding:12px 14px;container-type:inline-size;min-width:0;background:var(--surface);transition:background .15s}
 .card:hover .box{background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
-.gr{--cw:clamp(12px,calc((100cqw - 104px)/14),24px);--ch:max(14px,calc(var(--cw)*.72));display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px}
+@media(min-width:560px){.box{padding:20px 24px}}
+.gr{--cw:clamp(12px,calc((100cqw - 130px)/14),40px);--ch:max(14px,calc(var(--cw)*.68));display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px}
 .gauge{display:flex;width:calc(var(--n)*var(--cw));max-width:100%;border:1.5px solid var(--g-line);flex:0 1 auto}
 .gauge i{display:block;flex:1 1 0;min-width:0;height:var(--ch);border-left:1px solid var(--g-line)}
 .gauge i:first-child{border-left:none}
@@ -99,13 +101,13 @@ details.ing[open] summary::after{content:"▴"}
 .gauge .t-empty{background:var(--g-empty)}
 .gauge .t-soft{background:var(--g-soft)}
 .gauge .t-float{background:var(--g-float)}
-.icons{display:flex;gap:4px;align-items:center}
-.ic{width:26px;height:34px;flex:none;color:var(--ink);stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.labels{margin-top:6px;font-size:.95rem;line-height:1.55}
+.icons{display:flex;gap:6px;align-items:center}
+.ic{--h:clamp(34px,calc(var(--cw)*1.55),62px);height:var(--h);width:calc(var(--h)*.78);flex:none;color:var(--ink);stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.labels{margin-top:10px;font-size:clamp(.95rem,calc(.5rem + 1.5cqw),1.35rem);line-height:1.6}
 .lb{white-space:nowrap}
 .lb:not(:last-child)::after{content:"｜";color:var(--muted);margin:0 .3em 0 .35em}
 .nt{color:var(--muted)}
-.memo{margin-top:4px;font-size:.82rem;color:var(--muted);white-space:pre-wrap}
+.memo{margin-top:8px;font-size:.9rem;color:var(--muted);white-space:pre-wrap}
 .empty{padding:48px 0;text-align:center;color:var(--muted)}
 .empty .btn{margin-top:12px}
 
@@ -156,6 +158,8 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 .irow-opt input:disabled+span{opacity:.45}
 .irow-btns{margin-left:auto;display:inline-flex;gap:4px}
 .irow-btns button{width:36px;height:36px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.fld .tagadd{display:flex;gap:8px;margin-top:6px}
+.fld .tagadd input[type=text]{width:auto;flex:1;min-width:0}
 .hint{margin:6px 0 0;font-size:.78rem;color:var(--muted)}
 .err{color:var(--danger);font-size:.85rem;min-height:1.2em;margin:0}
 
@@ -166,7 +170,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 @media print{
   .top,.filters,.fab,#toast,.legend{display:none!important}
   body{background:#fff;color:#000}
-  .grid{grid-template-columns:1fr 1fr;gap:8px 20px}
+  .grid{gap:14px}
   .card{break-inside:avoid}
   :root{--bg:#fff;--surface:#fff;--ink:#000}
 }
@@ -198,7 +202,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
   <section class="filters" aria-label="絞り込み">
     <div class="frow"><span class="fl">スピリッツ</span><div class="chips" id="fSpirit"></div></div>
     <div class="frow"><span class="fl">技法</span><div class="chips" id="fTech"></div></div>
-    <div class="frow" id="rowOrig"><span class="fl">区分</span><div class="chips" id="fOrig"></div></div>
+    <div class="frow"><span class="fl">味わい</span><div class="chips" id="fTag"></div></div>
     <details class="ing" id="ingDetails">
       <summary>副材料・割り材で絞り込み <span class="badge" id="ingBadge" hidden></span></summary>
       <div class="ing-body">
@@ -213,7 +217,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
   </section>
 
   <div id="list"></div>
-  <p class="legend">ゲージ: 1マス = 5ml（1tsp = 1マス）。fill・dash・分数は、ゲージ外に文字で表示します。</p>
+  <p class="legend">目盛り: 1マス = 5ml（1tsp = 1マス）。fill・dash・分数は、目盛りの外に文字で表示します。</p>
 </main>
 
 <button class="fab" id="fab" aria-label="レシピを追加">＋ レシピを追加</button>
@@ -226,7 +230,8 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
     <div class="ed-body">
       <div class="ed-preview" id="edPreview" aria-label="プレビュー"></div>
       <label class="fld"><span>レシピ名</span><input id="fName" type="text" autocomplete="off" placeholder="例: ジントニック"></label>
-      <label class="chk"><input type="checkbox" id="fOrigChk"> ★ オリジナルレシピ</label>
+      <div class="fld"><span>味わいタグ（自由に追加できます）</span><div class="chips" id="fTagChips"></div>
+        <div class="tagadd"><input id="fTagIn" type="text" autocomplete="off" maxlength="20" placeholder="新しいタグを追加（例: ミント）"><button type="button" class="btn" id="fTagAdd">追加</button></div></div>
       <div class="two">
         <label class="fld"><span>見出し（ベース）</span><input id="fBase" type="text" list="dlBase" autocomplete="off" placeholder="空欄なら最初のスピリッツ"></label>
         <label class="fld"><span>グラス</span><input id="fGlass" type="text" list="dlGlass" autocomplete="off" placeholder="例: タンブラー"></label>
@@ -236,7 +241,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
         <span>材料</span>
         <div id="ingRows"></div>
         <button type="button" class="btn ghost" id="addIng">＋ 材料を追加</button>
-        <p class="hint">量は「30」（ml）・「1tsp」・「fill」・「1dash」・「1/6」などを自由に入力できます。ml と tsp は 5ml = 1マスのゲージになり、ゲージの色は並び順（濃灰→白→薄灰→白…）で自動的に決まります。「ゲージ」をはずすと文字だけの表示に、「別枠」にするとゲージの外に小さな1マスで表示します（沈める・フロートなど）。</p>
+        <p class="hint">量は「30」（ml）・「1tsp」・「fill」・「1dash」・「1/6」などを自由に入力できます。ml と tsp は 5ml = 1マスの目盛りになり、目盛りの色は並び順（濃灰→白→薄灰→白…）で自動的に決まります。「目盛り」のチェックをはずすと文字だけの表示に、「別枠」にすると目盛りの外に小さな1マスで表示します（沈める・フロートなど）。</p>
       </div>
       <label class="fld"><span>メモ</span><textarea id="fMemo" rows="3" placeholder="作り方のコツ、提供メモなど"></textarea></label>
       <p class="err" id="edErr" role="alert"></p>
@@ -280,7 +285,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 /* ============================================================
    レシピカンペ  — single-file PWA (IndexedDB)
    ============================================================ */
-const APP_VERSION='1.0.0';
+const APP_VERSION='1.1.0';
 const KINDS={base:'スピリッツ',liqueur:'リキュール・ベルモット等',juice:'ジュース・シロップ等',mixer:'割り材',garnish:'飾り・その他'};
 const SUB_KINDS=['liqueur','juice','mixer'];               // 「副材料・割り材」に含める区分
 const TECHS=['ビルド','シェイク','ステア','ブレンド'];
@@ -339,8 +344,21 @@ function guessIcon(name){
 const headingOf=b=>(!b||b==='その他')?'その他':(/ベース$/.test(b)?b:b+'ベース');
 
 /* ---------- seed data (from レシピカンペ20260114) ---------- */
+const TAG_SUGGEST=['フルーティ','ドライ','甘口','さっぱり','ほろ苦い','強め','オリジナル'];
+const SEED_TAGS={'seed-01':['さっぱり'],'seed-02':['さっぱり','ドライ'],'seed-03':['さっぱり'],'seed-04':['さっぱり'],'seed-05':['ほろ苦い','強め'],
+ 'seed-06':['さっぱり'],'seed-07':['ドライ','さっぱり'],'seed-08':['ドライ','強め'],'seed-09':['フルーティ','オリジナル'],'seed-10':['さっぱり'],
+ 'seed-11':['フルーティ','甘口'],'seed-12':['トマト'],'seed-13':['甘口','強め'],'seed-14':['さっぱり','フルーティ'],'seed-15':['ドライ','さっぱり'],
+ 'seed-16':['さっぱり','オリジナル'],'seed-17':['ドライ','さっぱり'],'seed-18':['さっぱり']};
+const normTag=t=>str(t).normalize('NFKC').replace(/\s+/g,' ').trim().slice(0,20);
+function cleanTags(x){
+  const raw=Array.isArray(x.tags)?x.tags:(SEED_TAGS[str(x.id)]||[]);
+  const out=[],seen=new Set();
+  const push=t=>{t=normTag(t);const k=t.toLowerCase();if(t&&!seen.has(k)){seen.add(k);out.push(t);}};
+  raw.forEach(push); if(x.original)push('オリジナル');   // 旧バージョンの ★オリジナル を移行
+  return out;
+}
 const I=(name,amount,kind,x)=>Object.assign({name,amount,kind,gauge:true,float:false,icon:'',note:''},x||{});
-const R=(id,name,base,techniques,glass,ings,x)=>Object.assign({id,name,original:false,base,techniques,glass,memo:'',ings},x||{});
+const R=(id,name,base,techniques,glass,ings,x)=>Object.assign({id,name,base,techniques,glass,tags:[],memo:'',ings},x||{});
 const SEED=[
  R('seed-01','ジントニック','ジン',['ビルド'],'タンブラー',[I('ジン','30','base'),I('カットライム','1/6','garnish',{icon:'wedge'}),I('トニック','fill','mixer'),I('ソーダ','15','mixer')]),
  R('seed-02','ジンリッキー','ジン',['ビルド'],'タンブラー',[I('ジン','30','base'),I('カットライム','2/6','garnish',{icon:'wedge'}),I('ソーダ','fill','mixer')]),
@@ -350,17 +368,17 @@ const SEED=[
  R('seed-06','ホワイト レディ','ジン',['シェイク'],'カクテル',[I('ジン','30','base'),I('コアントロー','15','liqueur'),I('レモン J','15','juice')]),
  R('seed-07','ギムレット','ジン',['シェイク'],'カクテル',[I('ジン','40','base'),I('ライム J','20','juice'),I('シロップ','1tsp','juice')]),
  R('seed-08','マティーニ','ジン',['ステア'],'カクテル',[I('ジン','45','base'),I('ドライベルモット','15','liqueur'),I('オレンジビターズ','1dash','liqueur',{icon:'drop'}),I('オリーブ','','garnish'),I('レモンピール','','garnish',{icon:'twist'})]),
- R('seed-09','マスカットティー サイドカー','ジン',['シェイク'],'カクテル',[I('ティフィン','20','liqueur'),I('ミスティア','10','liqueur'),I('ジン','15','base'),I('レモン J','15','juice')],{original:true}),
+ R('seed-09','マスカットティー サイドカー','ジン',['シェイク'],'カクテル',[I('ティフィン','20','liqueur'),I('ミスティア','10','liqueur'),I('ジン','15','base'),I('レモン J','15','juice')]),
  R('seed-10','モスコーミュール','ウォッカ',['ビルド'],'タンブラー',[I('ウォッカ','30','base'),I('ライム J','15','juice'),I('カットライム','','garnish',{icon:'wedge'}),I('ジンジャーエール','fill','mixer')]),
  R('seed-11','スクリュードライバー','ウォッカ',['ビルド'],'コリンズ',[I('ウォッカ','30','base'),I('オレンジ J','fill','juice')]),
  R('seed-12','ブラッディマリー','ウォッカ',['ビルド'],'タンブラー',[I('ウォッカ','30','base'),I('オレンジ J','15','juice'),I('トマト J','fill','juice'),I('レモンスライス','','garnish',{icon:'circle'})]),
  R('seed-13','ブラックルシアン','ウォッカ',['ビルド'],'ロックグラス',[I('ウォッカ','40','base'),I('カルーア','20','liqueur')]),
  R('seed-14','ソルティドッグ','ウォッカ',['ビルド'],'ロックグラス',[I('塩スノー','','garnish',{icon:'circle'}),I('ウォッカ','30','base'),I('グレフル J','60','juice',{gauge:false})]),
  R('seed-15','カミカゼ','ウォッカ',['シェイク'],'ロックグラス',[I('ウォッカ','30','base'),I('コアントロー','15','liqueur'),I('ライム J','15','juice')]),
- R('seed-16','ミント カミカゼ','ウォッカ',['シェイク'],'ロックグラス',[I('ウォッカ','30','base'),I('コアントロー','15','liqueur'),I('レモン J','15','juice'),I('ミントリキュール','1tsp','liqueur',{float:true,note:'沈める'})],{original:true}),
+ R('seed-16','ミント カミカゼ','ウォッカ',['シェイク'],'ロックグラス',[I('ウォッカ','30','base'),I('コアントロー','15','liqueur'),I('レモン J','15','juice'),I('ミントリキュール','1tsp','liqueur',{float:true,note:'沈める'})]),
  R('seed-17','バラライカ','ウォッカ',['シェイク'],'ロックグラス',[I('ウォッカ','30','base'),I('コアントロー','15','liqueur'),I('レモン J','15','juice')]),
  R('seed-18','アクア','ウォッカ',['シェイク','ビルド'],'シャンパングラス',[I('ウォッカ','30','base'),I('ミントリキュール','20','liqueur'),I('ライム J','10','juice'),I('トニック','fill','mixer')])
-].map((r,k)=>Object.assign(r,{order:(k+1)*10}));
+].map((r,k)=>Object.assign(r,{order:(k+1)*10,tags:SEED_TAGS[r.id]||[]}));
 
 /* ---------- sanitize ---------- */
 function sanIng(x){
@@ -371,7 +389,7 @@ function sanIng(x){
 function sanitizeRecipe(x){
   if(!x||typeof x!=='object')return null;
   const name=str(x.name).trim(); if(!name)return null;
-  return {id:str(x.id)||uid(),name,original:!!x.original,base:str(x.base).trim(),
+  return {id:str(x.id)||uid(),name,tags:cleanTags(x),base:str(x.base).trim(),
     techniques:(Array.isArray(x.techniques)?x.techniques:[]).map(str).filter(Boolean),
     glass:str(x.glass).trim(),memo:str(x.memo),order:Number.isFinite(+x.order)?+x.order:0,
     ings:(Array.isArray(x.ings)?x.ings:[]).map(sanIng).filter(Boolean)};
@@ -405,14 +423,14 @@ async function getMeta(k){if(!db)return undefined;try{const v=await tx('meta','r
 const byOrder=(a,b)=>a.order-b.order;
 
 /* ---------- filter state ---------- */
-const F={q:'',spirits:new Set(),techs:new Set(),orig:false,ings:new Set(),ingMode:'all'};
-const filterActive=()=>F.q.trim()||F.spirits.size||F.techs.size||F.orig||F.ings.size;
+const F={q:'',spirits:new Set(),techs:new Set(),tags:new Set(),ings:new Set(),ingMode:'all'};
+const filterActive=()=>F.q.trim()||F.spirits.size||F.techs.size||F.tags.size||F.ings.size;
 const subIngs=r=>r.ings.filter(i=>SUB_KINDS.includes(i.kind));
-function haystack(r){return norm([r.name,r.base,r.glass,r.techniques.join(''),r.memo,r.original?'オリジナル':'',...r.ings.map(i=>i.name+i.amount+i.note)].join(' '));}
+function haystack(r){return norm([r.name,r.base,r.glass,r.techniques.join(''),r.memo,r.tags.join(' '),...r.ings.map(i=>i.name+i.amount+i.note)].join(' '));}
 function matches(r){
   if(F.spirits.size&&!r.ings.some(i=>i.kind==='base'&&F.spirits.has(i.name)))return false;
   if(F.techs.size&&!r.techniques.some(t=>F.techs.has(t)))return false;
-  if(F.orig&&!r.original)return false;
+  if(F.tags.size&&!r.tags.some(t=>F.tags.has(t)))return false;
   if(F.ings.size){
     const have=new Set(subIngs(r).map(i=>i.name));const want=[...F.ings];
     if(!(F.ingMode==='all'?want.every(n=>have.has(n)):want.some(n=>have.has(n))))return false;
@@ -426,11 +444,12 @@ function matches(r){
 function cardInner(r){
   const meta=[r.techniques.join('+'),r.glass].filter(Boolean).join(' / ');
   const g=gaugeOf(r), icons=iconsOf(r);
+  const tg=r.tags.length?`<div class="tg">${r.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>`:'';
   const gauge=g.tones.length?`<div class="gauge" aria-hidden="true" style="--n:${g.tones.length}">${g.tones.map(t=>`<i class="t-${t}"></i>`).join('')}</div>`:'';
   const ic=icons.length?`<div class="icons" aria-hidden="true">${icons.map(n=>`<svg class="ic" viewBox="0 0 32 40"><use href="#i-${n}"/></svg>`).join('')}</div>`:'';
   const fl=g.float?`<div class="gauge" aria-hidden="true" style="--n:${g.float}">${'<i class="t-float"></i>'.repeat(g.float)}</div>`:'';
   const labels=r.ings.map(i=>`<span class="lb">${esc(i.name)}${i.amount?` <span class="am">${esc(i.amount)}</span>`:''}${i.note?`<span class="nt">（${esc(i.note)}）</span>`:''}</span>`).join('');
-  return `<div class="nm"><b>${r.original?'<span class="star">★</span>':''}${esc(r.name)}</b>${meta?`<small>${esc(meta)}</small>`:''}</div>
+  return `<div class="nm"><b>${esc(r.name)}</b>${meta?`<small>${esc(meta)}</small>`:''}${tg}</div>
   <div class="box"><div class="gr">${gauge}${ic}${fl}</div><div class="labels">${labels||'<span class="nt">材料が未登録です</span>'}</div>${r.memo?`<div class="memo">${esc(r.memo)}</div>`:''}</div>`;
 }
 function groupKeys(list){
@@ -459,9 +478,11 @@ function renderFilters(){
   const tc=countBy(r=>r.techniques);
   const tKeys=[...new Set([...TECHS,...tc.keys()])].filter(t=>tc.has(t));
   $('#fTech').innerHTML=tKeys.length?tKeys.map(k=>chip('tech',k,k,tc.get(k),F.techs.has(k))).join(''):'<span class="nt">—</span>';
-  const oc=recipes.filter(r=>r.original).length;
-  $('#rowOrig').hidden=!oc&&!F.orig;
-  $('#fOrig').innerHTML=chip('orig','1','★ オリジナル',oc,F.orig);
+  const tgc=countBy(r=>r.tags);
+  const tgKeys=[...tgc.keys()].sort((a,b)=>tgc.get(b)-tgc.get(a)||a.localeCompare(b,'ja'));
+  $('#fTag').innerHTML=tgKeys.length?tgKeys.map(k=>chip('tag',k,k,tgc.get(k),F.tags.has(k))).join(''):'<span class="nt">（レシピにタグを付けると、ここに並びます）</span>';
+  // 編集・削除で存在しなくなった選択は外す
+  [[F.spirits,sp],[F.techs,tc],[F.tags,tgc]].forEach(([set,m])=>set.forEach(v=>{if(!m.has(v))set.delete(v);}));
   // 副材料・割り材: 材料名ごとに集計し、最頻の区分でグループ化
   const stat=new Map();
   recipes.forEach(r=>{const seen=new Set();r.ings.forEach(i=>{if(!SUB_KINDS.includes(i.kind)||seen.has(i.name))return;seen.add(i.name);
@@ -470,6 +491,7 @@ function renderFilters(){
   stat.forEach((s,name)=>{const kind=Object.entries(s.kinds).sort((a,b)=>b[1]-a[1])[0][0];groups[kind].push([name,s.n]);});
   $('#fIng').innerHTML=SUB_KINDS.filter(k=>groups[k].length).map(k=>`<div><p class="sub">${KINDS[k]}</p><div class="chips">${
     groups[k].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ja')).map(([n,c])=>chip('ing',n,n,c,F.ings.has(n))).join('')}</div></div>`).join('')||'<span class="nt">—</span>';
+  F.ings.forEach(n=>{if(!stat.has(n))F.ings.delete(n);});
   const bd=$('#ingBadge');bd.hidden=!F.ings.size;bd.textContent=F.ings.size;
   document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===F.ingMode)));
 }
@@ -490,9 +512,9 @@ function choose(msg,btns,title='確認'){return new Promise(res=>{
 /* ---------- editor ---------- */
 let draft=null, draftSnap='', dlgOpen=false;
 const newIng=(kind='liqueur')=>({name:'',amount:'',kind,gauge:true,float:false,icon:'',note:'',_kt:false,_it:false});
-const strip=d=>({id:d.id,name:d.name,original:d.original,base:d.base,techniques:d.techniques,glass:d.glass,memo:d.memo,ings:d.ings.map(i=>({name:i.name,amount:i.amount,kind:i.kind,gauge:i.gauge,float:i.float,icon:i.icon,note:i.note}))});
+const strip=d=>({id:d.id,name:d.name,tags:d.tags,base:d.base,techniques:d.techniques,glass:d.glass,memo:d.memo,ings:d.ings.map(i=>({name:i.name,amount:i.amount,kind:i.kind,gauge:i.gauge,float:i.float,icon:i.icon,note:i.note}))});
 const isDirty=()=>JSON.stringify(strip(draft))!==draftSnap;
-function previewRecipe(){return {id:'preview',name:draft.name||'（レシピ名）',original:draft.original,base:draft.base,techniques:draft.techniques,glass:draft.glass,memo:draft.memo,ings:draft.ings.filter(i=>i.name.trim())};}
+function previewRecipe(){return {id:'preview',name:draft.name||'（レシピ名）',tags:draft.tags,base:draft.base,techniques:draft.techniques,glass:draft.glass,memo:draft.memo,ings:draft.ings.filter(i=>i.name.trim())};}
 function updatePreview(){$('#edPreview').innerHTML=`<div class="card">${cardInner(previewRecipe())}</div>`;}
 function renderTechChips(){
   const all=[...new Set([...TECHS,...draft.techniques])];
@@ -505,7 +527,7 @@ function renderRows(){
     <div class="irow-main"><input class="in-name" type="text" placeholder="材料名（例: ジン）" value="${esc(i.name)}" aria-label="材料名"><input class="in-amt" type="text" placeholder="量" value="${esc(i.amount)}" aria-label="量"></div>
     <div class="irow-sub"><select class="in-kind" aria-label="区分">${opt(KINDS,i.kind)}</select><select class="in-icon" aria-label="アイコン">${opt(ICONS,i.icon)}</select></div>
     <div class="irow-opt">
-      <label><input type="checkbox" class="in-gauge"${i.gauge?' checked':''}${b?'':' disabled'}><span>ゲージ</span></label>
+      <label><input type="checkbox" class="in-gauge"${i.gauge?' checked':''}${b?'':' disabled'}><span>目盛り</span></label>
       <label><input type="checkbox" class="in-float"${i.float?' checked':''}${b?'':' disabled'}><span>別枠</span></label>
       <span class="irow-btns"><button type="button" data-mv="-1" aria-label="上へ"${k===0?' disabled':''}>↑</button><button type="button" data-mv="1" aria-label="下へ"${k===draft.ings.length-1?' disabled':''}>↓</button><button type="button" data-del="1" aria-label="この材料を削除">×</button></span>
     </div>
@@ -514,17 +536,17 @@ function renderRows(){
 }
 function openEditor(id){
   const r=id?recipes.find(x=>x.id===id):null;
-  draft=r?clone(r):{id:null,name:'',original:false,base:'',techniques:[],glass:'',memo:'',ings:[newIng('base'),newIng()]};
+  draft=r?clone(r):{id:null,name:'',tags:[],base:'',techniques:[],glass:'',memo:'',ings:[newIng('base'),newIng()]};
   draft.ings.forEach(i=>{i._kt=!!r;i._it=!!r;});
   draftSnap=JSON.stringify(strip(draft));
   $('#edTitle').textContent=r?'レシピを編集':'レシピを追加';
-  $('#fName').value=draft.name;$('#fOrigChk').checked=draft.original;$('#fBase').value=draft.base;$('#fGlass').value=draft.glass;$('#fMemo').value=draft.memo;
+  $('#fName').value=draft.name;$('#fTagIn').value='';$('#fBase').value=draft.base;$('#fGlass').value=draft.glass;$('#fMemo').value=draft.memo;
   $('#edErr').textContent='';
   $('#edDelete').hidden=!r;$('#edCopy').hidden=!r;
   const bases=[...new Set([...BASE_ORDER,...recipes.map(x=>x.base).filter(Boolean)])];
   $('#dlBase').innerHTML=bases.map(b=>`<option value="${esc(b)}">`).join('');
   $('#dlGlass').innerHTML=[...new Set([...GLASSES,...recipes.map(x=>x.glass).filter(Boolean)])].map(b=>`<option value="${esc(b)}">`).join('');
-  renderTechChips();renderRows();updatePreview();
+  renderTechChips();renderTagChips();renderRows();updatePreview();
   $('#editor').showModal();
   document.querySelector('.ed-body').scrollTop=0;
   if(!r)$('#fName').focus();
@@ -537,12 +559,13 @@ async function requestClose(){
   $('#editor').close();
 }
 async function saveDraft(){
+  if($('#fTagIn').value.trim())addTagFromInput();
   const name=draft.name.trim();
   if(!name){$('#edErr').textContent='レシピ名を入力してください。';$('#fName').focus();return;}
   const ings=draft.ings.filter(i=>i.name.trim()).map(i=>({name:i.name.trim(),amount:i.amount.trim(),kind:i.kind,gauge:i.gauge!==false,float:!!i.float,icon:i.icon||'',note:i.note.trim()}));
   const base=draft.base.trim()||(ings.find(i=>i.kind==='base')||{}).name||'その他';
   const existing=draft.id?recipes.find(x=>x.id===draft.id):null;
-  const rec={id:draft.id||uid(),name,original:!!draft.original,base,techniques:draft.techniques.slice(),glass:draft.glass.trim(),memo:draft.memo,ings,
+  const rec={id:draft.id||uid(),name,tags:draft.tags.slice(),base,techniques:draft.techniques.slice(),glass:draft.glass.trim(),memo:draft.memo,ings,
     order:existing?existing.order:(recipes.reduce((m,x)=>Math.max(m,x.order),0)+10)};
   const i=recipes.findIndex(x=>x.id===rec.id);
   if(i>=0)recipes[i]=rec;else recipes.push(rec);
@@ -569,7 +592,26 @@ $('#eform').addEventListener('submit',e=>{e.preventDefault();saveDraft();});
 $('#edDelete').onclick=deleteDraft;
 $('#edCopy').onclick=()=>{draft.id=null;draft.name=draft.name+'（コピー）';$('#fName').value=draft.name;$('#edTitle').textContent='レシピを追加（複製）';$('#edDelete').hidden=true;$('#edCopy').hidden=true;draftSnap='';updatePreview();$('#fName').focus();};
 $('#fName').oninput=e=>{draft.name=e.target.value;$('#edErr').textContent='';updatePreview();};
-$('#fOrigChk').onchange=e=>{draft.original=e.target.checked;updatePreview();};
+function allTagNames(){return [...new Set([...TAG_SUGGEST,...recipes.flatMap(r=>r.tags),...draft.tags])];}
+function renderTagChips(){
+  $('#fTagChips').innerHTML=allTagNames().map(t=>`<button type="button" class="chip" data-tag="${esc(t)}" aria-pressed="${draft.tags.includes(t)}">${esc(t)}</button>`).join('');
+}
+function addTagFromInput(){
+  const inp=$('#fTagIn'),t=normTag(inp.value);inp.value='';
+  if(!t)return;
+  if(!draft.tags.some(x=>x.toLowerCase()===t.toLowerCase()))draft.tags.push(t);
+  renderTagChips();updatePreview();
+}
+$('#fTagChips').addEventListener('click',e=>{
+  const b=e.target.closest('[data-tag]');if(!b)return;
+  const t=b.dataset.tag,i=draft.tags.indexOf(t);if(i>=0)draft.tags.splice(i,1);else draft.tags.push(t);
+  renderTagChips();updatePreview();
+});
+$('#fTagAdd').onclick=addTagFromInput;
+$('#fTagIn').addEventListener('keydown',e=>{      // Enter でフォーム保存が走らないように。IME変換中のEnterは無視
+  if(e.key!=='Enter')return;e.preventDefault();
+  if(!e.isComposing&&e.keyCode!==229)addTagFromInput();
+});
 $('#fBase').oninput=e=>{draft.base=e.target.value;};
 $('#fGlass').oninput=e=>{draft.glass=e.target.value;updatePreview();};
 $('#fMemo').oninput=e=>{draft.memo=e.target.value;updatePreview();};
@@ -615,10 +657,10 @@ function toggle(set,v){set.has(v)?set.delete(v):set.add(v);}
 document.querySelector('.filters').addEventListener('click',e=>{
   const m=e.target.closest('.seg button');if(m){F.ingMode=m.dataset.mode;render();return;}
   const b=e.target.closest('.chip');if(!b)return;const {k,v}=b.dataset;
-  if(k==='spirit')toggle(F.spirits,v);else if(k==='tech')toggle(F.techs,v);else if(k==='ing')toggle(F.ings,v);else if(k==='orig')F.orig=!F.orig;
+  if(k==='spirit')toggle(F.spirits,v);else if(k==='tech')toggle(F.techs,v);else if(k==='ing')toggle(F.ings,v);else if(k==='tag')toggle(F.tags,v);
   render();
 });
-function clearFilters(){F.q='';F.spirits.clear();F.techs.clear();F.orig=false;F.ings.clear();$('#q').value='';render();}
+function clearFilters(){F.q='';F.spirits.clear();F.techs.clear();F.tags.clear();F.ings.clear();$('#q').value='';render();}
 $('#clearF').onclick=clearFilters;
 $('#q').addEventListener('input',e=>{F.q=e.target.value;renderList();});
 $('#fab').onclick=()=>openEditor(null);
@@ -689,6 +731,8 @@ async function init(){
     }
   }else list=clone(SEED);
   recipes=list.map(sanitizeRecipe).filter(Boolean).sort(byOrder);
+  // 旧バージョンで保存したレシピ（original 項目あり / tags なし）を新形式で保存し直す
+  if(db&&list.some(r=>r&&('original' in r||!Array.isArray(r.tags))))await saveMany(recipes);
   applyTheme();render();
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch{}
 }
