@@ -3,7 +3,7 @@
  * アプリ本体を更新して公開したら、CACHE の番号を上げてください（古いキャッシュが自動で消えます）。
  * レシピのデータは IndexedDB にあり、この Service Worker は触りません。
  */
-const CACHE = 'recipe-kanpe-v2';
+const CACHE = 'recipe-kanpe-v3';
 const ASSETS = [
   './',
   './index.html',

@@ -112,6 +112,10 @@ details.ing[open] summary::after{content:"▴"}
 .empty .btn{margin-top:12px}
 
 .fab{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:15;height:52px;padding:0 20px;border-radius:26px;border:none;background:var(--ink);color:var(--bg);font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.fab-top{right:auto;left:max(16px,env(safe-area-inset-left));background:var(--surface);color:var(--ink);border:1px solid var(--line);font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.16);
+  opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .15s,transform .15s}
+.fab-top.show{opacity:1;transform:none;pointer-events:auto}
+@media (prefers-reduced-motion: reduce){.fab-top{transition:none}}
 .legend{margin:28px 0 0;font-size:.8rem;color:var(--muted)}
 
 /* ---------- buttons / dialogs ---------- */
@@ -220,6 +224,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
   <p class="legend">目盛り: 1マス = 5ml（1tsp = 1マス）。fill・dash・分数は、目盛りの外に文字で表示します。</p>
 </main>
 
+<button class="fab fab-top" id="toTop" aria-label="ページの先頭へ戻る">↑ 先頭へ</button>
 <button class="fab" id="fab" aria-label="レシピを追加">＋ レシピを追加</button>
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -237,6 +242,8 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
         <label class="fld"><span>グラス</span><input id="fGlass" type="text" list="dlGlass" autocomplete="off" placeholder="例: タンブラー"></label>
       </div>
       <div class="fld"><span>技法（選んだ順に表示）</span><div class="chips" id="fTechs"></div></div>
+      <div class="fld"><span>シェイカー・グラスの表示</span><div class="chips" id="fEquip"></div>
+        <p class="hint">技法を選ぶと自動で候補が入ります。ここで直接オン・オフすると、その内容で保存されます。</p></div>
       <div class="fld">
         <span>材料</span>
         <div id="ingRows"></div>
@@ -285,7 +292,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 /* ============================================================
    レシピカンペ  — single-file PWA (IndexedDB)
    ============================================================ */
-const APP_VERSION='1.1.0';
+const APP_VERSION='1.2.0';
 const KINDS={base:'スピリッツ',liqueur:'リキュール・ベルモット等',juice:'ジュース・シロップ等',mixer:'割り材',garnish:'飾り・その他'};
 const SUB_KINDS=['liqueur','juice','mixer'];               // 「副材料・割り材」に含める区分
 const TECHS=['ビルド','シェイク','ステア','ブレンド'];
@@ -317,11 +324,23 @@ function gaugeOf(r){
   main.forEach((b,k)=>{const t=k===0?'strong':(k%2===1?'empty':'soft');for(let j=0;j<b;j++)tones.push(t);});
   return {tones,float};
 }
+const EQUIP_ORDER=['shaker','glass','glassfizz'];
+const EQUIP_LABEL={shaker:'シェイカー',glass:'グラス',glassfizz:'グラス（炭酸）'};
+function legacyEquip(techniques,ings){        // 旧バージョン（技法から自動判定）と同じ結果を再現する
+  const eq=[];
+  if(techniques.includes('シェイク'))eq.push('shaker');
+  if(techniques.includes('ビルド'))eq.push(ings.some(i=>i.kind==='mixer')?'glassfizz':'glass');
+  return eq;
+}
+function normEquip(list){
+  const set=new Set((Array.isArray(list)?list:[]).filter(e=>EQUIP_ORDER.includes(e)));
+  if(set.has('glass')&&set.has('glassfizz'))set.delete('glass');   // グラスと炭酸グラスは排他
+  return EQUIP_ORDER.filter(e=>set.has(e));
+}
 function iconsOf(r){
   const out=[];
   r.ings.forEach(i=>{if(i.icon)out.push(i.icon);});
-  if(r.techniques.includes('シェイク'))out.push('shaker');
-  if(r.techniques.includes('ビルド'))out.push(r.ings.some(i=>i.kind==='mixer')?'glassfizz':'glass');
+  out.push(...r.equip);
   return out;
 }
 function guessKind(name){
@@ -378,7 +397,7 @@ const SEED=[
  R('seed-16','ミント カミカゼ','ウォッカ',['シェイク'],'ロックグラス',[I('ウォッカ','30','base'),I('コアントロー','15','liqueur'),I('レモン J','15','juice'),I('ミントリキュール','1tsp','liqueur',{float:true,note:'沈める'})]),
  R('seed-17','バラライカ','ウォッカ',['シェイク'],'ロックグラス',[I('ウォッカ','30','base'),I('コアントロー','15','liqueur'),I('レモン J','15','juice')]),
  R('seed-18','アクア','ウォッカ',['シェイク','ビルド'],'シャンパングラス',[I('ウォッカ','30','base'),I('ミントリキュール','20','liqueur'),I('ライム J','10','juice'),I('トニック','fill','mixer')])
-].map((r,k)=>Object.assign(r,{order:(k+1)*10,tags:SEED_TAGS[r.id]||[]}));
+].map((r,k)=>Object.assign(r,{order:(k+1)*10,tags:SEED_TAGS[r.id]||[],equip:legacyEquip(r.techniques,r.ings)}));
 
 /* ---------- sanitize ---------- */
 function sanIng(x){
@@ -389,10 +408,12 @@ function sanIng(x){
 function sanitizeRecipe(x){
   if(!x||typeof x!=='object')return null;
   const name=str(x.name).trim(); if(!name)return null;
+  const techniques=(Array.isArray(x.techniques)?x.techniques:[]).map(str).filter(Boolean);
+  const ings=(Array.isArray(x.ings)?x.ings:[]).map(sanIng).filter(Boolean);
+  const equip=normEquip(Array.isArray(x.equip)?x.equip:legacyEquip(techniques,ings));   // 旧データはここで自動復元
   return {id:str(x.id)||uid(),name,tags:cleanTags(x),base:str(x.base).trim(),
-    techniques:(Array.isArray(x.techniques)?x.techniques:[]).map(str).filter(Boolean),
-    glass:str(x.glass).trim(),memo:str(x.memo),order:Number.isFinite(+x.order)?+x.order:0,
-    ings:(Array.isArray(x.ings)?x.ings:[]).map(sanIng).filter(Boolean)};
+    techniques,glass:str(x.glass).trim(),memo:str(x.memo),order:Number.isFinite(+x.order)?+x.order:0,
+    equip,ings};
 }
 
 /* ---------- storage (IndexedDB, in-memory fallback) ---------- */
@@ -495,7 +516,7 @@ function renderFilters(){
   const bd=$('#ingBadge');bd.hidden=!F.ings.size;bd.textContent=F.ings.size;
   document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===F.ingMode)));
 }
-function render(){renderFilters();renderList();}
+function render(){renderFilters();renderList();updateToTop();}
 
 /* ---------- toast / confirm ---------- */
 let tt;
@@ -512,14 +533,22 @@ function choose(msg,btns,title='確認'){return new Promise(res=>{
 /* ---------- editor ---------- */
 let draft=null, draftSnap='', dlgOpen=false;
 const newIng=(kind='liqueur')=>({name:'',amount:'',kind,gauge:true,float:false,icon:'',note:'',_kt:false,_it:false});
-const strip=d=>({id:d.id,name:d.name,tags:d.tags,base:d.base,techniques:d.techniques,glass:d.glass,memo:d.memo,ings:d.ings.map(i=>({name:i.name,amount:i.amount,kind:i.kind,gauge:i.gauge,float:i.float,icon:i.icon,note:i.note}))});
+const strip=d=>({id:d.id,name:d.name,tags:d.tags,base:d.base,techniques:d.techniques,glass:d.glass,memo:d.memo,equip:d.equip,ings:d.ings.map(i=>({name:i.name,amount:i.amount,kind:i.kind,gauge:i.gauge,float:i.float,icon:i.icon,note:i.note}))});
 const isDirty=()=>JSON.stringify(strip(draft))!==draftSnap;
-function previewRecipe(){return {id:'preview',name:draft.name||'（レシピ名）',tags:draft.tags,base:draft.base,techniques:draft.techniques,glass:draft.glass,memo:draft.memo,ings:draft.ings.filter(i=>i.name.trim())};}
+function previewRecipe(){return {id:'preview',name:draft.name||'（レシピ名）',tags:draft.tags,base:draft.base,techniques:draft.techniques,glass:draft.glass,memo:draft.memo,equip:draft.equip,ings:draft.ings.filter(i=>i.name.trim())};}
 function updatePreview(){$('#edPreview').innerHTML=`<div class="card">${cardInner(previewRecipe())}</div>`;}
 function renderTechChips(){
   const all=[...new Set([...TECHS,...draft.techniques])];
   $('#fTechs').innerHTML=all.map(t=>{const idx=draft.techniques.indexOf(t);
     return `<button type="button" class="chip" data-tech="${esc(t)}" aria-pressed="${idx>=0}">${idx>=0?(idx+1)+'. ':''}${esc(t)}</button>`;}).join('');
+}
+function renderEquipChips(){
+  $('#fEquip').innerHTML=EQUIP_ORDER.map(k=>`<button type="button" class="chip" data-eq="${k}" aria-pressed="${draft.equip.includes(k)}">${esc(EQUIP_LABEL[k])}</button>`).join('');
+}
+function autoEquip(){        // 技法・材料の区分から、まだ手を付けていなければ自動で候補を入れる
+  if(draft._equipTouched)return;
+  draft.equip=legacyEquip(draft.techniques,draft.ings);
+  renderEquipChips();
 }
 function renderRows(){
   const opt=(o,cur)=>Object.entries(o).map(([v,l])=>`<option value="${esc(v)}"${v===cur?' selected':''}>${esc(l)}</option>`).join('');
@@ -536,8 +565,9 @@ function renderRows(){
 }
 function openEditor(id){
   const r=id?recipes.find(x=>x.id===id):null;
-  draft=r?clone(r):{id:null,name:'',tags:[],base:'',techniques:[],glass:'',memo:'',ings:[newIng('base'),newIng()]};
+  draft=r?clone(r):{id:null,name:'',tags:[],base:'',techniques:[],glass:'',memo:'',equip:[],ings:[newIng('base'),newIng()]};
   draft.ings.forEach(i=>{i._kt=!!r;i._it=!!r;});
+  draft._equipTouched=!!r;
   draftSnap=JSON.stringify(strip(draft));
   $('#edTitle').textContent=r?'レシピを編集':'レシピを追加';
   $('#fName').value=draft.name;$('#fTagIn').value='';$('#fBase').value=draft.base;$('#fGlass').value=draft.glass;$('#fMemo').value=draft.memo;
@@ -546,7 +576,7 @@ function openEditor(id){
   const bases=[...new Set([...BASE_ORDER,...recipes.map(x=>x.base).filter(Boolean)])];
   $('#dlBase').innerHTML=bases.map(b=>`<option value="${esc(b)}">`).join('');
   $('#dlGlass').innerHTML=[...new Set([...GLASSES,...recipes.map(x=>x.glass).filter(Boolean)])].map(b=>`<option value="${esc(b)}">`).join('');
-  renderTechChips();renderTagChips();renderRows();updatePreview();
+  renderTechChips();renderTagChips();renderEquipChips();renderRows();updatePreview();
   $('#editor').showModal();
   document.querySelector('.ed-body').scrollTop=0;
   if(!r)$('#fName').focus();
@@ -565,7 +595,7 @@ async function saveDraft(){
   const ings=draft.ings.filter(i=>i.name.trim()).map(i=>({name:i.name.trim(),amount:i.amount.trim(),kind:i.kind,gauge:i.gauge!==false,float:!!i.float,icon:i.icon||'',note:i.note.trim()}));
   const base=draft.base.trim()||(ings.find(i=>i.kind==='base')||{}).name||'その他';
   const existing=draft.id?recipes.find(x=>x.id===draft.id):null;
-  const rec={id:draft.id||uid(),name,tags:draft.tags.slice(),base,techniques:draft.techniques.slice(),glass:draft.glass.trim(),memo:draft.memo,ings,
+  const rec={id:draft.id||uid(),name,tags:draft.tags.slice(),base,techniques:draft.techniques.slice(),glass:draft.glass.trim(),memo:draft.memo,equip:normEquip(draft.equip),ings,
     order:existing?existing.order:(recipes.reduce((m,x)=>Math.max(m,x.order),0)+10)};
   const i=recipes.findIndex(x=>x.id===rec.id);
   if(i>=0)recipes[i]=rec;else recipes.push(rec);
@@ -617,14 +647,27 @@ $('#fGlass').oninput=e=>{draft.glass=e.target.value;updatePreview();};
 $('#fMemo').oninput=e=>{draft.memo=e.target.value;updatePreview();};
 $('#fTechs').addEventListener('click',e=>{const b=e.target.closest('[data-tech]');if(!b)return;
   const t=b.dataset.tech,i=draft.techniques.indexOf(t);if(i>=0)draft.techniques.splice(i,1);else draft.techniques.push(t);
-  renderTechChips();updatePreview();});
-$('#addIng').onclick=()=>{draft.ings.push(newIng());renderRows();const rows=document.querySelectorAll('.irow');rows[rows.length-1].querySelector('.in-name').focus();};
+  renderTechChips();autoEquip();updatePreview();});
+$('#fEquip').addEventListener('click',e=>{
+  const b=e.target.closest('[data-eq]');if(!b)return;
+  const v=b.dataset.eq;draft._equipTouched=true;
+  if(v==='shaker'){
+    const i=draft.equip.indexOf('shaker');if(i>=0)draft.equip.splice(i,1);else draft.equip.push('shaker');
+  }else{
+    const other=v==='glass'?'glassfizz':'glass';
+    draft.equip=draft.equip.filter(x=>x!==other);
+    const i=draft.equip.indexOf(v);if(i>=0)draft.equip.splice(i,1);else draft.equip.push(v);
+  }
+  draft.equip=normEquip(draft.equip);
+  renderEquipChips();updatePreview();
+});
+$('#addIng').onclick=()=>{draft.ings.push(newIng());renderRows();autoEquip();const rows=document.querySelectorAll('.irow');rows[rows.length-1].querySelector('.in-name').focus();};
 const rowsEl=$('#ingRows');
 rowsEl.addEventListener('input',e=>{
   const row=e.target.closest('.irow');if(!row)return;const i=draft.ings[+row.dataset.i];const c=e.target.classList;
   if(c.contains('in-name')){
     i.name=e.target.value;
-    if(!i._kt){i.kind=guessKind(i.name);row.querySelector('.in-kind').value=i.kind;}
+    if(!i._kt){i.kind=guessKind(i.name);row.querySelector('.in-kind').value=i.kind;autoEquip();}
     if(!i._it){i.icon=guessIcon(i.name);row.querySelector('.in-icon').value=i.icon;}
   }else if(c.contains('in-amt')){
     i.amount=e.target.value;const b=blocksOf(i);
@@ -634,7 +677,7 @@ rowsEl.addEventListener('input',e=>{
 });
 rowsEl.addEventListener('change',e=>{
   const row=e.target.closest('.irow');if(!row)return;const i=draft.ings[+row.dataset.i];const c=e.target.classList;
-  if(c.contains('in-kind')){i.kind=e.target.value;i._kt=true;}
+  if(c.contains('in-kind')){i.kind=e.target.value;i._kt=true;autoEquip();}
   else if(c.contains('in-icon')){i.icon=e.target.value;i._it=true;}
   else if(c.contains('in-gauge'))i.gauge=e.target.checked;
   else if(c.contains('in-float'))i.float=e.target.checked;
@@ -644,7 +687,7 @@ rowsEl.addEventListener('click',e=>{
   const row=e.target.closest('.irow');if(!row)return;const k=+row.dataset.i;
   const mv=e.target.closest('[data-mv]'),del=e.target.closest('[data-del]');
   if(mv){const j=k+ +mv.dataset.mv;if(j<0||j>=draft.ings.length)return;[draft.ings[k],draft.ings[j]]=[draft.ings[j],draft.ings[k]];renderRows();updatePreview();}
-  else if(del){draft.ings.splice(k,1);renderRows();updatePreview();}
+  else if(del){draft.ings.splice(k,1);renderRows();autoEquip();updatePreview();}
 });
 
 /* ---------- list / filter events ---------- */
@@ -664,6 +707,14 @@ function clearFilters(){F.q='';F.spirits.clear();F.techs.clear();F.tags.clear();
 $('#clearF').onclick=clearFilters;
 $('#q').addEventListener('input',e=>{F.q=e.target.value;renderList();});
 $('#fab').onclick=()=>openEditor(null);
+
+/* ---------- scroll to top ---------- */
+const toTopBtn=$('#toTop');
+const reduceMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+function updateToTop(){toTopBtn.classList.toggle('show',window.scrollY>420);}
+window.addEventListener('scroll',updateToTop,{passive:true});
+window.addEventListener('resize',updateToTop);
+toTopBtn.onclick=()=>window.scrollTo({top:0,behavior:reduceMotion()?'auto':'smooth'});
 
 /* ---------- menu / backup ---------- */
 let theme='auto';
@@ -731,8 +782,8 @@ async function init(){
     }
   }else list=clone(SEED);
   recipes=list.map(sanitizeRecipe).filter(Boolean).sort(byOrder);
-  // 旧バージョンで保存したレシピ（original 項目あり / tags なし）を新形式で保存し直す
-  if(db&&list.some(r=>r&&('original' in r||!Array.isArray(r.tags))))await saveMany(recipes);
+  // 旧バージョンで保存したレシピ（original 項目あり / tags・equip なし）を新形式で保存し直す
+  if(db&&list.some(r=>r&&('original' in r||!Array.isArray(r.tags)||!Array.isArray(r.equip))))await saveMany(recipes);
   applyTheme();render();
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch{}
 }
