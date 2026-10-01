@@ -19,6 +19,10 @@
   --accent:#1e9de0; --danger:#c5303a;
   --chip-bg:#f1f3f5; --chip-on-bg:#1d1f23; --chip-on-ink:#ffffff;
   --g-strong:#9b9b9b; --g-empty:#ffffff; --g-soft:#dadada; --g-float:#adadad; --g-line:#2b2b2b;
+  /* 大分類の色（控えめに使う） */
+  --c-gin:#2f7fc1; --c-vodka:#6a5fc1; --c-brandy:#a8405e; --c-rum:#c8553d; --c-whisky:#a8741a;
+  --c-tequila:#6f8f1c; --c-fruit:#b0479c; --c-liqueur:#3f8f55; --c-coffee:#7b5a43; --c-na:#1f9a8c;
+  --c-other:#7c828c; --on-c:#ffffff;
   --font:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic UI","Yu Gothic","Meiryo UI","Meiryo","Noto Sans JP",system-ui,-apple-system,sans-serif;
 }
 @media (prefers-color-scheme: dark){
@@ -27,6 +31,9 @@
     --accent:#4cb8f5; --danger:#ff7a83;
     --chip-bg:#262a31; --chip-on-bg:#eceef1; --chip-on-ink:#14161a;
     --g-strong:#b4b4b4; --g-empty:#181a1e; --g-soft:#585c62; --g-float:#8a8a8a; --g-line:#cfcfcf;
+    --c-gin:#6cb2ea; --c-vodka:#a39af0; --c-brandy:#e57f9a; --c-rum:#ef8a70; --c-whisky:#e0b050;
+    --c-tequila:#b3cf5c; --c-fruit:#e08ad0; --c-liqueur:#74c489; --c-coffee:#c39d80; --c-na:#5fcdbf;
+    --c-other:#a0a6ae; --on-c:#14161a;
   }
 }
 :root[data-theme="dark"]{
@@ -34,6 +41,9 @@
   --accent:#4cb8f5; --danger:#ff7a83;
   --chip-bg:#262a31; --chip-on-bg:#eceef1; --chip-on-ink:#14161a;
   --g-strong:#b4b4b4; --g-empty:#181a1e; --g-soft:#585c62; --g-float:#8a8a8a; --g-line:#cfcfcf;
+  --c-gin:#6cb2ea; --c-vodka:#a39af0; --c-brandy:#e57f9a; --c-rum:#ef8a70; --c-whisky:#e0b050;
+  --c-tequila:#b3cf5c; --c-fruit:#e08ad0; --c-liqueur:#74c489; --c-coffee:#c39d80; --c-na:#5fcdbf;
+  --c-other:#a0a6ae; --on-c:#14161a;
 }
 
 *{box-sizing:border-box}
@@ -44,17 +54,62 @@ button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 [hidden]{display:none!important}
 
-/* ---------- header ---------- */
-.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
-.top-in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+/* ---------- header (sticky: title / search / 大分類タブ) ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--bg);box-shadow:0 1px 0 var(--line);padding-top:env(safe-area-inset-top)}
+.top-in{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
 .top h1{margin:0;font-size:1.15rem;font-weight:600;letter-spacing:.04em;white-space:nowrap}
 .search{flex:1;min-width:0}
 .search input{width:100%;height:42px;border:1px solid var(--line);border-radius:21px;padding:0 16px;background:var(--surface)}
+/* ヘッダーのボタン（レシピを追加 / 設定） */
+.hbtn{flex:none;display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 15px;border-radius:21px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font-size:.93rem;font-weight:600;white-space:nowrap}
+.hbtn svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hbtn.primary{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.hbtn .plus{font-size:1.1rem;line-height:1}
+.hbtn .hb-s{display:none}
+@media(max-width:600px){
+  .top-in{flex-wrap:wrap;row-gap:8px}
+  .top h1{flex:1;min-width:0}
+  .search{order:3;flex-basis:100%}
+  .hbtn .hb-l{display:none}
+  .hbtn .hb-s{display:inline}
+}
 .icon-btn{flex:none;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);font-size:1.2rem;line-height:1;display:grid;place-items:center}
 
-/* ---------- filters ---------- */
-main{max-width:1100px;margin:0 auto;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
-.filters{padding:14px 0 4px;display:grid;gap:10px}
+/* 大分類タブ（下線タブ） */
+.tabs-main{max-width:1200px;margin:0 auto;display:flex;flex-wrap:wrap;gap:0 2px;padding:0 10px}
+.tab{--c:var(--ink);flex:none;display:inline-flex;align-items:center;gap:7px;min-height:46px;padding:12px 14px 9px;white-space:nowrap;font-size:1rem;font-weight:500;color:var(--ink);background:transparent;border:none;border-bottom:4px solid transparent;border-radius:10px 10px 0 0}
+.tab .dot{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
+.tab[data-v="all"] .dot{display:none}
+.tab em{font-style:normal;font-size:.78rem;opacity:.72}
+.tab.zero:not([aria-pressed="true"]){opacity:.5}
+.tab[aria-pressed="true"]{border-bottom-color:var(--c);background:color-mix(in srgb,var(--c) 13%,transparent);color:var(--c);font-weight:700}
+@media(max-width:720px){
+  .tabs-main{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tabs-main::-webkit-scrollbar{display:none}
+}
+
+/* ---------- layout: 左レール(中分類) + 本文 ---------- */
+.layout{max-width:1200px;margin:0 auto;display:flex;align-items:flex-start}
+.rail{flex:none;width:168px;position:sticky;top:var(--head-h,104px);display:flex;flex-direction:column;gap:6px;padding:14px 4px 14px 16px;max-height:calc(100dvh - var(--head-h,104px));overflow-y:auto}
+.rail-h{margin:0 0 2px 4px;font-size:.75rem;color:var(--muted);letter-spacing:.08em}
+.railbtn{display:flex;align-items:center;gap:8px;width:100%;min-height:48px;padding:8px 10px;border:none;border-left:4px solid transparent;border-radius:0 10px 10px 0;background:transparent;text-align:left;font-size:.98rem;font-weight:500;color:var(--ink)}
+.railbtn .ri{width:20px;height:25px;flex:none;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.railbtn .rl{flex:1;min-width:0;white-space:nowrap}
+.railbtn em{font-style:normal;font-size:.78rem;opacity:.72}
+.railbtn.zero:not([aria-pressed="true"]){opacity:.5}
+.railbtn[aria-pressed="true"]{border-left-color:var(--cur,var(--ink));background:color-mix(in srgb,var(--cur,var(--ink)) 12%,transparent);color:var(--cur,var(--ink));font-weight:700}
+@media(max-width:720px){
+  .layout{flex-direction:column}
+  .rail{position:static;width:auto;max-height:none;flex-direction:row;overflow-x:auto;overflow-y:visible;padding:10px 16px 2px;gap:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .rail-h{display:none}
+  .railbtn{flex:none;width:auto;min-height:42px;padding:6px 12px;white-space:nowrap;border:1.5px solid var(--line);border-radius:999px;background:var(--surface);font-size:.92rem}
+  .railbtn .ri{width:17px;height:21px}
+  .railbtn[aria-pressed="true"]{background:var(--cur,var(--ink));border-color:var(--cur,var(--ink));color:var(--on-cur,var(--bg))}
+}
+.content{flex:1;min-width:0;padding:14px 16px calc(96px + env(safe-area-inset-bottom))}
+
+/* ---------- 補助フィルター(区分・味わい・副材料) ---------- */
+.filters2{display:grid;gap:10px;margin-bottom:6px}
 .frow{display:flex;gap:10px;align-items:flex-start}
 .fl{flex:none;width:5.2em;font-size:.8rem;color:var(--muted);padding-top:7px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -73,27 +128,50 @@ details.ing[open] summary::after{content:"▴"}
 .seg button{border:none;background:transparent;padding:5px 12px;font-size:.82rem;min-height:32px}
 .seg button[aria-pressed="true"]{background:var(--chip-on-bg);color:var(--chip-on-ink)}
 .sub{font-size:.78rem;color:var(--muted);margin:0 0 6px}
-.fbar{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:36px;font-size:.88rem;color:var(--muted)}
+.fbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;min-height:36px;font-size:.88rem;color:var(--muted)}
+.fbar .seg button{min-height:34px}
+
+/* ---------- コンパクト表示 ---------- */
+.clist{margin-top:14px;border-top:1px solid var(--line)}
+.crow{--c:var(--c-other);border-bottom:1px solid var(--line)}
+.cbtn{display:grid;grid-template-columns:minmax(150px,30%) minmax(0,1fr) auto 16px;align-items:center;gap:4px 14px;width:100%;padding:10px 6px 10px 12px;border:none;border-left:4px solid color-mix(in srgb,var(--c) 75%,transparent);background:transparent;text-align:left;color:var(--ink)}
+.cbtn:hover,.crow.open .cbtn{background:color-mix(in srgb,var(--c) 7%,transparent)}
+.c-nm{display:inline-flex;align-items:baseline;gap:6px;min-width:0}
+.c-nm b{font-weight:500;font-size:1.02rem;line-height:1.35}
+.c-nm .gi{--s:1rem}
+.c-ing{font-size:.85rem;color:var(--muted);line-height:1.45;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.c-meta{font-size:.75rem;color:var(--muted);white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.c-meta .cdot{width:8px;height:8px}
+.chev{color:var(--muted);font-size:.8rem;transition:transform .15s}
+.crow.open .chev{transform:rotate(180deg)}
+.crow .card{padding:8px 6px 18px 16px}
+@media(max-width:559px){
+  .cbtn{grid-template-columns:minmax(0,1fr) auto 16px}
+  .c-ing{grid-column:1/-1;grid-row:2}
+}
 .linkbtn{border:none;background:none;color:var(--accent);padding:6px 4px;font-size:.88rem}
 
 /* ---------- list ---------- */
-.section{margin-top:22px}
-.section h2{margin:0 0 10px;font-size:clamp(1.7rem,5.5vw,2.4rem);font-weight:300;letter-spacing:.06em;line-height:1.25}
-.grid{display:grid;grid-template-columns:1fr;gap:26px}
-.card{display:grid;grid-template-columns:1fr;gap:6px;width:100%;padding:0;margin:0;border:none;background:none;text-align:left;align-items:center}
-@media(min-width:560px){.card{grid-template-columns:minmax(170px,26%) minmax(0,1fr);gap:22px}}
+.grid{display:grid;grid-template-columns:1fr;gap:18px;margin-top:16px}
+.card{--c:var(--c-other);display:grid;grid-template-columns:1fr;gap:6px;width:100%;padding:0;margin:0;border:none;background:none;text-align:left;align-items:center}
+@media(min-width:560px){.card{grid-template-columns:minmax(170px,26%) minmax(0,1fr);gap:18px}}
 .nm{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
 @media(min-width:560px){.nm{display:block}}
-.nm b{font-size:1.3rem;font-weight:400;line-height:1.3}
-@media(min-width:560px){.nm b{font-size:1.55rem}.nm small{font-size:.9rem}}
+.nm-h{display:inline-flex;align-items:baseline;gap:7px}
+.gi{--s:1.2rem;width:var(--s);height:calc(var(--s)*1.25);flex:none;color:var(--muted);stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transform:translateY(.1em)}
+.nm b{font-size:1.25rem;font-weight:400;line-height:1.25}
+@media(min-width:560px){.nm b{font-size:1.42rem}.nm small{font-size:.9rem}.gi{--s:1.4rem}}
 .nm small{display:block;font-size:.8rem;color:var(--muted)}
 @media(max-width:559px){.nm small{display:inline}}
-.tg{flex-basis:100%;margin-top:6px;display:flex;flex-wrap:wrap;gap:4px}
+.tg{flex-basis:100%;margin-top:4px;display:flex;flex-wrap:wrap;gap:4px}
 .tg span{font-size:.75rem;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 9px;line-height:1.7}
-.box{border:2px dotted var(--accent);padding:12px 14px;container-type:inline-size;min-width:0;background:var(--surface);transition:background .15s}
-.card:hover .box{background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
-@media(min-width:560px){.box{padding:20px 24px}}
-.gr{--cw:clamp(12px,calc((100cqw - 130px)/14),40px);--ch:max(14px,calc(var(--cw)*.68));display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px}
+.tg span.c{background:var(--chip-bg);border-color:var(--chip-bg);color:var(--ink)}
+.box{--tint:4%;border:2px dotted color-mix(in srgb,var(--c) 80%,transparent);padding:10px 12px;container-type:inline-size;min-width:0;background:color-mix(in srgb,var(--c) var(--tint),var(--surface));transition:background .15s}
+.card:hover .box{--tint:10%}
+.cat{display:inline-flex;align-items:center;gap:5px;margin-right:.7em;color:var(--ink)}
+.cdot{width:9px;height:9px;border-radius:50%;background:var(--c);flex:none}
+@media(min-width:560px){.box{padding:13px 20px}}
+.gr{--cw:clamp(12px,calc((100cqw - 130px)/14),40px);--ch:max(12px,calc(var(--cw)*.56));display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px}
 .gauge{display:flex;width:calc(var(--n)*var(--cw));max-width:100%;border:1.5px solid var(--g-line);flex:0 1 auto}
 .gauge i{display:block;flex:1 1 0;min-width:0;height:var(--ch);border-left:1px solid var(--g-line)}
 .gauge i:first-child{border-left:none}
@@ -102,17 +180,16 @@ details.ing[open] summary::after{content:"▴"}
 .gauge .t-soft{background:var(--g-soft)}
 .gauge .t-float{background:var(--g-float)}
 .icons{display:flex;gap:6px;align-items:center}
-.ic{--h:clamp(34px,calc(var(--cw)*1.55),62px);height:var(--h);width:calc(var(--h)*.78);flex:none;color:var(--ink);stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
-.labels{margin-top:10px;font-size:clamp(.95rem,calc(.5rem + 1.5cqw),1.35rem);line-height:1.6}
+.ic{--h:clamp(30px,calc(var(--cw)*1.3),50px);height:var(--h);width:calc(var(--h)*.78);flex:none;color:var(--ink);stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.labels{margin-top:6px;font-size:clamp(.92rem,calc(.45rem + 1.45cqw),1.28rem);line-height:1.5}
 .lb{white-space:nowrap}
 .lb:not(:last-child)::after{content:"｜";color:var(--muted);margin:0 .3em 0 .35em}
 .nt{color:var(--muted)}
-.memo{margin-top:8px;font-size:.9rem;color:var(--muted);white-space:pre-wrap}
+.memo{margin-top:5px;font-size:.9rem;color:var(--muted);white-space:pre-wrap}
 .empty{padding:48px 0;text-align:center;color:var(--muted)}
 .empty .btn{margin-top:12px}
 
-.fab{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:15;height:52px;padding:0 20px;border-radius:26px;border:none;background:var(--ink);color:var(--bg);font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.25)}
-.fab-top{right:auto;left:max(16px,env(safe-area-inset-left));background:var(--surface);color:var(--ink);border:1px solid var(--line);font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.16);
+.fab-top{position:fixed;left:max(16px,env(safe-area-inset-left));bottom:max(16px,env(safe-area-inset-bottom));z-index:15;height:52px;padding:0 20px;border-radius:26px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:600;box-shadow:0 4px 14px rgba(0,0,0,.16);
   opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .15s,transform .15s}
 .fab-top.show{opacity:1;transform:none;pointer-events:auto}
 @media (prefers-reduced-motion: reduce){.fab-top{transition:none}}
@@ -138,10 +215,9 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 .ed-h{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);padding-top:max(12px,env(safe-area-inset-top))}
 .ed-h h2{margin:0;font-size:1.05rem}
 .ed-body{flex:1;overflow:auto;padding:14px 16px;display:grid;gap:14px;align-content:start}
-.ed-f{display:flex;gap:8px;align-items:center;padding:10px 16px;border-top:1px solid var(--line);padding-bottom:max(10px,env(safe-area-inset-bottom))}
-.sp{flex:1}
-.ed-f{gap:6px}
+.ed-f{display:flex;gap:6px;align-items:center;padding:10px 16px;border-top:1px solid var(--line);padding-bottom:max(10px,env(safe-area-inset-bottom))}
 .ed-f .btn{white-space:nowrap;padding:0 14px;flex:none}
+.sp{flex:1}
 .fld{display:grid;gap:4px;font-size:.85rem;color:var(--muted)}
 .fld input[type=text],.fld input:not([type]),.fld textarea,.fld select,.irow input,.irow select{width:100%;min-height:42px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--surface);color:var(--ink)}
 .fld textarea{resize:vertical}
@@ -150,8 +226,7 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:480px){.two{grid-template-columns:1fr}}
 .ed-preview{padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
-.ed-preview .card{pointer-events:none}
-.ed-preview .card{grid-template-columns:1fr}
+.ed-preview .card{pointer-events:none;grid-template-columns:1fr}
 #ingRows{display:grid;gap:10px}
 .irow{border:1px solid var(--line);border-radius:10px;padding:8px;display:grid;gap:6px}
 .irow-main{display:grid;grid-template-columns:1fr 110px;gap:6px}
@@ -166,16 +241,21 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 .fld .tagadd input[type=text]{width:auto;flex:1;min-width:0}
 .hint{margin:6px 0 0;font-size:.78rem;color:var(--muted)}
 .err{color:var(--danger);font-size:.85rem;min-height:1.2em;margin:0}
+.warn{color:var(--c-whisky);font-size:.82rem;margin:-8px 0 0}
+.fld.price input{max-width:12em}
+.fld.price small{margin-left:.6em;font-size:.75rem;color:var(--muted)}
 
 #toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translate(-50%,12px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.9rem;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;max-width:calc(100% - 32px)}
 #toast.on{opacity:1;transform:translate(-50%,0)}
 @media (prefers-reduced-motion: reduce){#toast,.box{transition:none}}
 
 @media print{
-  .top,.filters,.fab,#toast,.legend{display:none!important}
+  .top,.rail,.filters2,.fab-top,#toast,.legend{display:none!important}
+  .layout{display:block}
   body{background:#fff;color:#000}
   .grid{gap:14px}
   .card{break-inside:avoid}
+  .box{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   :root{--bg:#fff;--surface:#fff;--ink:#000}
 }
 </style>
@@ -185,12 +265,31 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
     <symbol id="i-shaker" viewBox="0 0 32 40"><path d="M13 5h6v4h-6z"/><path d="M10 15v-2.5a6 6 0 0 1 12 0V15"/><path d="M8 15h16"/><path d="M9.2 15l1.5 20a2.6 2.6 0 0 0 2.6 2.4h5.4a2.6 2.6 0 0 0 2.6-2.4L22.8 15"/></symbol>
-    <symbol id="i-glass" viewBox="0 0 32 40"><path d="M6 7h20l-2.4 28.5a2.5 2.5 0 0 1-2.5 2.3H10.9a2.5 2.5 0 0 1-2.5-2.3z"/><path d="M7.3 14q4.3-2 8.7 0t8.7 0"/></symbol>
-    <symbol id="i-glassfizz" viewBox="0 0 32 40"><path d="M6 7h20l-2.4 28.5a2.5 2.5 0 0 1-2.5 2.3H10.9a2.5 2.5 0 0 1-2.5-2.3z"/><g fill="currentColor" stroke="none"><circle cx="13" cy="15" r="1"/><circle cx="19" cy="18" r="1"/><circle cx="15" cy="23" r="1"/><circle cx="20" cy="27" r="1"/><circle cx="13" cy="31" r="1"/></g></symbol>
     <symbol id="i-wedge" viewBox="0 0 32 40"><g transform="rotate(-20 16 22)"><path d="M4 26a12 12 0 0 1 24 0z"/><path d="M8.5 26a7.5 7.5 0 0 1 15 0"/></g></symbol>
     <symbol id="i-circle" viewBox="0 0 32 40"><circle cx="16" cy="20" r="11"/></symbol>
     <symbol id="i-drop" viewBox="0 0 32 40"><path d="M16 7C16 7 8.5 17 8.5 24.5a7.5 7.5 0 0 0 15 0C23.5 17 16 7 16 7z"/><path d="M12.5 25a3.5 3.5 0 0 0 3.5 3.5"/></symbol>
     <symbol id="i-twist" viewBox="0 0 32 40"><circle cx="16" cy="20" r="11"/><path d="M8.22 27.78A11 11 0 0 1 23.78 12.22z" fill="var(--g-soft)"/><path d="M6 30L26 10"/></symbol>
+    <!-- fill up（ソーダ・ジュース）とエスプレッソ -->
+    <symbol id="i-soda" viewBox="0 0 32 40"><path d="M6 7h20l-2.4 28.5a2.5 2.5 0 0 1-2.5 2.3H10.9a2.5 2.5 0 0 1-2.5-2.3z"/><g fill="currentColor" stroke="none"><circle cx="13" cy="15" r="1"/><circle cx="19" cy="18" r="1"/><circle cx="15" cy="23" r="1"/><circle cx="20" cy="27" r="1"/><circle cx="13" cy="31" r="1"/></g></symbol>
+    <symbol id="i-juice" viewBox="0 0 32 40"><path d="M6 7h20l-2.4 28.5a2.5 2.5 0 0 1-2.5 2.3H10.9a2.5 2.5 0 0 1-2.5-2.3z"/><path d="M7.3 14q4.3-2 8.7 0t8.7 0"/></symbol>
+    <symbol id="i-espresso1" viewBox="0 0 32 40"><path d="M9.5 20.5h13l-1 13.4a1.8 1.8 0 0 1-1.8 1.6h-7.4a1.8 1.8 0 0 1-1.8-1.6z" fill="var(--g-strong)" stroke="none"/><path d="M8.5 13h15l-1.7 21.1a2.2 2.2 0 0 1-2.2 2h-7.2a2.2 2.2 0 0 1-2.2-2z"/><path d="M9.4 20.5h13.2"/></symbol>
+    <symbol id="i-espresso2" viewBox="0 0 32 40"><g fill="var(--g-strong)" stroke="none"><path d="M3.3 20.5h10.4l-.8 13.2a1.6 1.6 0 0 1-1.6 1.5H5.7a1.6 1.6 0 0 1-1.6-1.5z"/><path d="M18.3 20.5h10.4l-.8 13.2a1.6 1.6 0 0 1-1.6 1.5h-5.6a1.6 1.6 0 0 1-1.6-1.5z"/></g><path d="M2.5 13h12l-1.4 20.9a2 2 0 0 1-2 1.9H5.9a2 2 0 0 1-2-1.9z"/><path d="M17.5 13h12l-1.4 20.9a2 2 0 0 1-2 1.9h-5.2a2 2 0 0 1-2-1.9z"/><path d="M3.2 20.5h10.6M18.2 20.5h10.6"/></symbol>
+    <!-- 技法アイコン（中分類タブ用） -->
+    <symbol id="t-all" viewBox="0 0 32 40"><rect x="7" y="11" width="8" height="8" rx="1.5"/><rect x="17" y="11" width="8" height="8" rx="1.5"/><rect x="7" y="21" width="8" height="8" rx="1.5"/><rect x="17" y="21" width="8" height="8" rx="1.5"/></symbol>
+    <symbol id="t-build" viewBox="0 0 32 40"><path d="M16 3v8"/><path d="M12.8 8l3.2 3.2L19.2 8"/><path d="M9 15h14l-1.5 18.5a2 2 0 0 1-2 1.8h-7a2 2 0 0 1-2-1.8z"/></symbol>
+    <symbol id="t-stir" viewBox="0 0 32 40"><path d="M8 15h16l-1.4 18.5a2 2 0 0 1-2 1.8h-9.2a2 2 0 0 1-2-1.8z"/><path d="M21.5 5.5L14 31"/><circle cx="22.2" cy="3.8" r="1.6"/></symbol>
+    <symbol id="t-blend" viewBox="0 0 32 40"><path d="M8 5h16"/><path d="M9 5l2 18h10l2-18"/><path d="M9 23h14v9a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2z"/><circle cx="16" cy="28.5" r="1.6"/></symbol>
+    <!-- グラスの種類アイコン -->
+    <symbol id="g-tumbler" viewBox="0 0 32 40"><path d="M9 6h14l-1.7 26.5a2 2 0 0 1-2 1.8H12.7a2 2 0 0 1-2-1.8z"/></symbol>
+    <symbol id="g-collins" viewBox="0 0 32 40"><path d="M11 4h10l-1.3 30a1.8 1.8 0 0 1-1.8 1.6h-3.8a1.8 1.8 0 0 1-1.8-1.6z"/></symbol>
+    <symbol id="g-rocks" viewBox="0 0 32 40"><path d="M6 17h20l-1.6 14.5a2 2 0 0 1-2 1.8H9.6a2 2 0 0 1-2-1.8z"/></symbol>
+    <symbol id="g-coupe" viewBox="0 0 32 40"><path d="M5 11h22c0 5.8-4.9 9.5-11 9.5S5 16.8 5 11z"/><path d="M16 20.5V32"/><path d="M11 32h10"/></symbol>
+    <symbol id="g-cocktail" viewBox="0 0 32 40"><path d="M6 8h20L17.2 20.6a1.6 1.6 0 0 1-2.4 0z"/><path d="M16 20.5V32"/><path d="M11 32h10"/></symbol>
+    <symbol id="g-flute" viewBox="0 0 32 40"><path d="M13.2 5h5.6l.9 17a3.7 3.7 0 0 1-3.7 3.6a3.7 3.7 0 0 1-3.7-3.6z"/><path d="M16 25.6V32"/><path d="M11.5 32h9"/></symbol>
+    <symbol id="g-wine" viewBox="0 0 32 40"><path d="M9 7h14"/><path d="M9 7c0 8 3.2 13 7 13s7-5 7-13"/><path d="M16 20v9"/><path d="M11 32h10"/></symbol>
+    <symbol id="g-goblet" viewBox="0 0 32 40"><path d="M6 8h20c0 8-4.5 13-10 13S6 16 6 8z"/><path d="M16 21v6"/><path d="M16 27c-2.2 0-3.6 2.2-4 5h8c-.4-2.8-1.8-5-4-5z"/></symbol>
+    <symbol id="g-shot" viewBox="0 0 32 40"><path d="M12 19h8l-.7 10.5a1.4 1.4 0 0 1-1.4 1.3h-3.8a1.4 1.4 0 0 1-1.4-1.3z"/></symbol>
+    <symbol id="g-mug" viewBox="0 0 32 40"><path d="M8 12h13v16a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2z"/><path d="M21 15.5h2.5a3.2 3.2 0 0 1 0 9H21"/></symbol>
   </defs>
 </svg>
 
@@ -198,34 +297,40 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
   <div class="top-in">
     <h1>レシピカンペ</h1>
     <div class="search"><input type="search" id="q" placeholder="検索" autocomplete="off" enterkeyhint="search" aria-label="レシピ名・材料で検索"></div>
-    <button class="icon-btn" id="menuBtn" aria-label="メニュー" title="メニュー">⋯</button>
+    <button type="button" class="hbtn primary" id="addBtn" aria-label="レシピを追加"><span class="plus" aria-hidden="true">＋</span><span class="hb-l">レシピを追加</span><span class="hb-s">追加</span></button>
+    <button type="button" class="hbtn" id="menuBtn" aria-label="設定"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M10.3 2.8h3.4l.5 2.4 1.6.9 2.3-.8 1.7 2.9-1.8 1.6v1.9l1.8 1.6-1.7 2.9-2.3-.8-1.6.9-.5 2.4h-3.4l-.5-2.4-1.6-.9-2.3.8-1.7-2.9 1.8-1.6v-1.9L4.2 8.2l1.7-2.9 2.3.8 1.6-.9z"/></svg>設定</button>
   </div>
+  <nav class="tabs-main" id="tabsBase" aria-label="ベーススピリッツで絞り込み"></nav>
 </header>
 
-<main>
-  <section class="filters" aria-label="絞り込み">
-    <div class="frow"><span class="fl">スピリッツ</span><div class="chips" id="fSpirit"></div></div>
-    <div class="frow"><span class="fl">技法</span><div class="chips" id="fTech"></div></div>
-    <div class="frow"><span class="fl">味わい</span><div class="chips" id="fTag"></div></div>
-    <details class="ing" id="ingDetails">
-      <summary>副材料・割り材で絞り込み <span class="badge" id="ingBadge" hidden></span></summary>
-      <div class="ing-body">
-        <div class="seg" role="group" aria-label="材料の条件" style="justify-self:start">
-          <button type="button" data-mode="all" aria-pressed="true">すべて含む</button>
-          <button type="button" data-mode="any" aria-pressed="false">いずれか含む</button>
+<div class="layout">
+  <aside class="rail" id="tabsTech" aria-label="技法で絞り込み"></aside>
+  <main class="content">
+    <section class="filters2" aria-label="追加の絞り込み">
+      <div class="frow"><span class="fl">区分</span><div class="chips" id="fCat"></div></div>
+      <div class="frow"><span class="fl">味わい</span><div class="chips" id="fTag"></div></div>
+      <details class="ing" id="ingDetails">
+        <summary>副材料・割り材で絞り込み <span class="badge" id="ingBadge" hidden></span></summary>
+        <div class="ing-body">
+          <div class="seg" role="group" aria-label="材料の条件" style="justify-self:start">
+            <button type="button" data-mode="all" aria-pressed="true">すべて含む</button>
+            <button type="button" data-mode="any" aria-pressed="false">いずれか含む</button>
+          </div>
+          <div id="fIng"></div>
         </div>
-        <div id="fIng"></div>
+      </details>
+      <div class="fbar"><span id="count" aria-live="polite"></span><button class="linkbtn" id="clearF" hidden>絞り込みを解除</button><span class="sp"></span>
+        <div class="seg" id="sortSeg" role="group" aria-label="並び順"><button type="button" data-sort="order">登録順</button><button type="button" data-sort="name">名前順</button></div>
+        <div class="seg" id="viewSeg" role="group" aria-label="表示の切り替え"><button type="button" data-view="detail">詳細</button><button type="button" data-view="compact">コンパクト</button></div>
       </div>
-    </details>
-    <div class="fbar"><span id="count" aria-live="polite"></span><button class="linkbtn" id="clearF" hidden>絞り込みを解除</button></div>
-  </section>
+    </section>
 
-  <div id="list"></div>
-  <p class="legend">目盛り: 1マス = 5ml（1tsp = 1マス）。fill・dash・分数は、目盛りの外に文字で表示します。</p>
-</main>
+    <div id="list"></div>
+    <p class="legend">目盛り: 1マス = 5ml（1tsp = 1マス）。fill・dash・分数は、目盛りの外に文字で表示します。</p>
+  </main>
+</div>
 
-<button class="fab fab-top" id="toTop" aria-label="ページの先頭へ戻る">↑ 先頭へ</button>
-<button class="fab" id="fab" aria-label="レシピを追加">＋ レシピを追加</button>
+<button class="fab-top" id="toTop" aria-label="ページの先頭へ戻る">↑ 先頭へ</button>
 <div id="toast" role="status" aria-live="polite"></div>
 
 <!-- editor -->
@@ -235,22 +340,26 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
     <div class="ed-body">
       <div class="ed-preview" id="edPreview" aria-label="プレビュー"></div>
       <label class="fld"><span>レシピ名</span><input id="fName" type="text" autocomplete="off" placeholder="例: ジントニック"></label>
+      <p class="warn" id="edDup" role="status" hidden></p>
+      <div class="fld"><span>区分タグ（メニュー・オリジナル・RinneDex など）</span><div class="chips" id="fCatChips"></div>
+        <div class="tagadd"><input id="fCatIn" type="text" autocomplete="off" maxlength="20" placeholder="新しい区分を追加（例: 季節限定）"><button type="button" class="btn" id="fCatAdd">追加</button></div></div>
       <div class="fld"><span>味わいタグ（自由に追加できます）</span><div class="chips" id="fTagChips"></div>
         <div class="tagadd"><input id="fTagIn" type="text" autocomplete="off" maxlength="20" placeholder="新しいタグを追加（例: ミント）"><button type="button" class="btn" id="fTagAdd">追加</button></div></div>
       <div class="two">
-        <label class="fld"><span>見出し（ベース）</span><input id="fBase" type="text" list="dlBase" autocomplete="off" placeholder="空欄なら最初のスピリッツ"></label>
-        <label class="fld"><span>グラス</span><input id="fGlass" type="text" list="dlGlass" autocomplete="off" placeholder="例: タンブラー"></label>
+        <label class="fld"><span>大分類</span><select id="fBase"></select></label>
+        <label class="fld"><span>グラス</span><select id="fGlass"></select></label>
       </div>
+      <label class="fld" id="fGlassLabelWrap" hidden><span>グラス名（メモ・任意）</span><input id="fGlassLabel" type="text" autocomplete="off" maxlength="20" placeholder="例: ティキマグ"></label>
       <div class="fld"><span>技法（選んだ順に表示）</span><div class="chips" id="fTechs"></div></div>
-      <div class="fld"><span>シェイカー・グラスの表示</span><div class="chips" id="fEquip"></div>
-        <p class="hint">技法を選ぶと自動で候補が入ります。ここで直接オン・オフすると、その内容で保存されます。</p></div>
+      <label class="chk"><input type="checkbox" id="fShaker"> シェイカーを使う（アイコンを表示）</label>
       <div class="fld">
         <span>材料</span>
         <div id="ingRows"></div>
         <button type="button" class="btn ghost" id="addIng">＋ 材料を追加</button>
-        <p class="hint">量は「30」（ml）・「1tsp」・「fill」・「1dash」・「1/6」などを自由に入力できます。ml と tsp は 5ml = 1マスの目盛りになり、目盛りの色は並び順（濃灰→白→薄灰→白…）で自動的に決まります。「目盛り」のチェックをはずすと文字だけの表示に、「別枠」にすると目盛りの外に小さな1マスで表示します（沈める・フロートなど）。</p>
+        <p class="hint">量は「30」（ml）・「1tsp」・「fill」・「1dash」・「1/6」などを自由に入力できます。ml と tsp は 5ml = 1マスの目盛りになり、目盛りの色は並び順（濃灰→白→薄灰→白…）で自動的に決まります。「目盛り」のチェックをはずすと文字だけの表示に、「別枠」にすると目盛りの外に小さな1マスで表示します（沈める・フロートなど）。「アイコン」では飾り（くし切り・ピールなど）のほか、fill up を表す「ソーダ」「ジュース」、エスプレッソの「ソロ」「ドピオ」を選べます（材料名と量から候補が自動で入ります）。「90-120」のような幅のある量は、最初の数字で目盛りを描きます。</p>
       </div>
       <label class="fld"><span>メモ</span><textarea id="fMemo" rows="3" placeholder="作り方のコツ、提供メモなど"></textarea></label>
+      <label class="fld price"><span>価格（円）<small>一覧には表示されず、この編集画面でだけ見えます</small></span><input id="fPrice" type="text" inputmode="numeric" autocomplete="off" maxlength="9" placeholder="例: 900"></label>
       <p class="err" id="edErr" role="alert"></p>
     </div>
     <div class="ed-f">
@@ -261,13 +370,11 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
       <button type="submit" class="btn primary" id="edSave">保存</button>
     </div>
   </form>
-  <datalist id="dlBase"></datalist>
-  <datalist id="dlGlass"></datalist>
 </dialog>
 
 <!-- menu -->
 <dialog id="menu" class="small-dlg" aria-labelledby="menuTitle">
-  <h3 id="menuTitle">メニュー</h3>
+  <h3 id="menuTitle">設定</h3>
   <div class="stack">
     <button class="btn" id="mTheme"></button>
     <button class="btn" id="mExport">バックアップを書き出す（JSON）</button>
@@ -291,14 +398,44 @@ dialog::backdrop{background:rgba(0,0,0,.5)}
 'use strict';
 /* ============================================================
    レシピカンペ  — single-file PWA (IndexedDB)
+   大分類(ベース)×中分類(技法)のタブ、区分タグ・味わいタグ、目盛り表示。
+   変更履歴は README.md を参照。
    ============================================================ */
-const APP_VERSION='1.2.0';
+const APP_VERSION='2.6.0';
 const KINDS={base:'スピリッツ',liqueur:'リキュール・ベルモット等',juice:'ジュース・シロップ等',mixer:'割り材',garnish:'飾り・その他'};
 const SUB_KINDS=['liqueur','juice','mixer'];               // 「副材料・割り材」に含める区分
 const TECHS=['ビルド','シェイク','ステア','ブレンド'];
-const BASE_ORDER=['ジン','ウォッカ','ラム','テキーラ','ウイスキー','ブランデー'];
-const GLASSES=['タンブラー','コリンズ','ロックグラス','カクテル','シャンパングラス','ワイングラス','ショット','マグ'];
-const ICONS={'':'なし',wedge:'くし切り',circle:'円（スライス・ピール）',drop:'ドロップ（ダッシュ）',twist:'ツイスト'};
+/* 大分類（未登録でも常にタブを表示する） */
+const BASES=[
+  {key:'ジン',label:'ジンベース',short:'ジン',slug:'gin'},
+  {key:'ウォッカ',label:'ウォッカベース',short:'ウォッカ',slug:'vodka'},
+  {key:'ブランデー',label:'ブランデーベース',short:'ブランデー',slug:'brandy'},
+  {key:'ラム',label:'ラムベース',short:'ラム',slug:'rum'},
+  {key:'ウイスキー',label:'ウイスキーベース',short:'ウイスキー',slug:'whisky'},
+  {key:'テキーラ',label:'テキーラベース',short:'テキーラ',slug:'tequila'},
+  {key:'果実酒',label:'果実酒ベース',short:'果実酒',slug:'fruit'},
+  {key:'リキュール',label:'リキュールベース',short:'リキュール',slug:'liqueur'},
+  {key:'コーヒー',label:'コーヒーベース',short:'コーヒー',slug:'coffee'},
+  {key:'ノンアルコール',label:'ノンアルコール',short:'ノンアル',slug:'na'},
+];
+const BASE_MAP=Object.fromEntries(BASES.map(b=>[b.key,b]));
+const TECH_ICON={'ビルド':'t-build','シェイク':'i-shaker','ステア':'t-stir','ブレンド':'t-blend'};
+const ICONS={'':'なし',wedge:'くし切り',circle:'円（スライス・ピール）',drop:'ドロップ（ダッシュ）',twist:'ツイスト',
+  soda:'ソーダ（炭酸でfill）',juice:'ジュース（fill）',espresso1:'エスプレッソ ソロ',espresso2:'エスプレッソ ドピオ'};
+const GLASS_TYPES=[
+  {key:'tumbler',label:'タンブラー',icon:'g-tumbler'},
+  {key:'collins',label:'コリンズ',icon:'g-collins'},
+  {key:'rocks',label:'ロックグラス',icon:'g-rocks'},
+  {key:'cocktail',label:'カクテルグラス',icon:'g-cocktail'},
+  {key:'coupe',label:'クープグラス',icon:'g-coupe'},
+  {key:'flute',label:'シャンパングラス',icon:'g-flute'},
+  {key:'wine',label:'ワイングラス',icon:'g-wine'},
+  {key:'goblet',label:'ゴブレット',icon:'g-goblet'},
+  {key:'shot',label:'ショットグラス',icon:'g-shot'},
+  {key:'mug',label:'マグ',icon:'g-mug'},
+  {key:'other',label:'その他',icon:''},
+];
+const GLASS_MAP=Object.fromEntries(GLASS_TYPES.map(g=>[g.key,g]));
 
 /* ---------- utils ---------- */
 const $=(s,r=document)=>r.querySelector(s);
@@ -311,10 +448,11 @@ const norm=s=>str(s).normalize('NFKC').toLowerCase().replace(/[ぁ-ゖ]/g,c=>Str
 /* ---------- domain ---------- */
 function blocksOf(ing){
   const a=str(ing.amount).normalize('NFKC').trim().toLowerCase();
+  const NUM='(\\d+(?:\\.\\d+)?)(?:\\s*[-~〜]\\s*\\d+(?:\\.\\d+)?)?';   // 「90-120」「1〜2」は最初の数字を使う
   let ml=0,m;
-  if((m=a.match(/^(\d+(?:\.\d+)?)\s*(?:ml|cc)?$/))) ml=parseFloat(m[1]);
-  else if((m=a.match(/^(\d+(?:\.\d+)?)\s*(tsp|bsp)/))) ml=parseFloat(m[1])*5;
-  else if((m=a.match(/^(\d+(?:\.\d+)?)\s*tbsp/))) ml=parseFloat(m[1])*15;
+  if((m=a.match(new RegExp('^'+NUM+'\\s*(?:ml|cc)?$')))) ml=parseFloat(m[1]);
+  else if((m=a.match(new RegExp('^'+NUM+'\\s*(tsp|bsp)')))) ml=parseFloat(m[1])*5;
+  else if((m=a.match(new RegExp('^'+NUM+'\\s*tbsp')))) ml=parseFloat(m[1])*15;
   return ml>0?Math.max(1,Math.round(ml/5)):0;
 }
 function gaugeOf(r){
@@ -324,80 +462,99 @@ function gaugeOf(r){
   main.forEach((b,k)=>{const t=k===0?'strong':(k%2===1?'empty':'soft');for(let j=0;j<b;j++)tones.push(t);});
   return {tones,float};
 }
-const EQUIP_ORDER=['shaker','glass','glassfizz'];
-const EQUIP_LABEL={shaker:'シェイカー',glass:'グラス',glassfizz:'グラス（炭酸）'};
-function legacyEquip(techniques,ings){        // 旧バージョン（技法から自動判定）と同じ結果を再現する
-  const eq=[];
-  if(techniques.includes('シェイク'))eq.push('shaker');
-  if(techniques.includes('ビルド'))eq.push(ings.some(i=>i.kind==='mixer')?'glassfizz':'glass');
-  return eq;
-}
-function normEquip(list){
-  const set=new Set((Array.isArray(list)?list:[]).filter(e=>EQUIP_ORDER.includes(e)));
-  if(set.has('glass')&&set.has('glassfizz'))set.delete('glass');   // グラスと炭酸グラスは排他
-  return EQUIP_ORDER.filter(e=>set.has(e));
-}
 function iconsOf(r){
   const out=[];
   r.ings.forEach(i=>{if(i.icon)out.push(i.icon);});
-  out.push(...r.equip);
+  if(r.shaker)out.push('shaker');
   return out;
+}
+function glassOf(r){ return GLASS_MAP[r.glassType]||null; }
+function glassLabelOf(r){
+  const g=glassOf(r);
+  if(!g)return '';
+  return (g.key==='other')?(r.glassLabel||''):g.label;
 }
 function guessKind(name){
   const n=str(name).normalize('NFKC');
-  if(/ソーダ|トニック|ジンジャー|コーラ|ビール|サイダー|炭酸|ウーロン|緑茶|紅茶|牛乳|ミルク|^水$|お湯|^湯$/.test(n))return 'mixer';
-  if(/リキュール|ベルモット|ビターズ|シェリー|ワイン/.test(n))return 'liqueur';
-  if(/^(ジン|ウォッカ|ラム|テキーラ|ウイスキー|ウィスキー|バーボン|スコッチ|ブランデー|コニャック|カルバドス|焼酎|泡盛|日本酒|ピスコ|メスカル)/.test(n))return 'base';
+  if(/リキュール/.test(n))return 'liqueur';
+  if(/ソーダ|トニック|ジンジャー|コーラ|ビール|サイダー|炭酸|ウーロン|烏龍|緑茶|紅茶|牛乳|ミルク|^水$|お湯|^湯$|エスプレッソ|コーヒー/.test(n))return 'mixer';
+  if(/ベルモット|ビターズ|シェリー|ワイン/.test(n))return 'liqueur';
+  if(/(ジン|ウォッカ|ウオッカ|ラム|テキーラ|ウイスキー|ウィスキー|バーボン|スコッチ|ブランデー|コニャック|カルバドス|焼酎|泡盛|日本酒|ピスコ|メスカル)/.test(n))return 'base';
   if(/(\bJ$|ジュース|シロップ|シュガー|砂糖|蜂蜜|ハチミツ|グレナデン|ガムシロ|サワーミックス|卵)/i.test(n))return 'juice';
   if(/カット|スライス|ピール|オリーブ|チェリー|ミント|塩|スノー|ホイップ|セロリ|ストロー|ナツメグ/.test(n))return 'garnish';
   return 'liqueur';
 }
-function guessIcon(name){
+const isFill=a=>/^fill/i.test(str(a).normalize('NFKC').trim());
+function guessIcon(name,amount){
   const n=str(name).normalize('NFKC');
+  if(/エスプレッソ\s*(ドピオ|ドッピオ)/.test(n))return 'espresso2';
+  if(/エスプレッソ\s*ソロ/.test(n))return 'espresso1';
+  if(isFill(amount)){      // fill up する材料
+    if(/ソーダ|トニック|ジンジャーエール|ジンジャービア|コーラ|サイダー|炭酸|スパークリング/.test(n))return 'soda';
+    if(/ジュース|J$|ネクター|カルピス|牛乳|ミルク|茶|ウォーター|^水$/.test(n))return 'juice';
+  }
   if(/レモンピール|ツイスト/.test(n))return 'twist';
   if(/ビターズ/.test(n))return 'drop';
   if(/カット/.test(n))return 'wedge';
   if(/ピール|スライス|塩|スノー/.test(n))return 'circle';
   return '';
 }
-const headingOf=b=>(!b||b==='その他')?'その他':(/ベース$/.test(b)?b:b+'ベース');
+const normBase=v=>str(v).normalize('NFKC').trim();
+// 材料から大分類を推定（編集画面で「自動」を選んだとき）
+function guessBase(ings){
+  const sp=ings.find(i=>i.kind==='base');
+  if(sp){const n=str(sp.name).normalize('NFKC');
+    if(/ジン/.test(n))return 'ジン'; if(/ウォッカ|ウオッカ/.test(n))return 'ウォッカ';
+    if(/ブランデー|コニャック|カルバドス|アルマニャック/.test(n))return 'ブランデー'; if(/ラム/.test(n))return 'ラム';
+    if(/ウイスキー|ウィスキー|バーボン|スコッチ/.test(n))return 'ウイスキー'; if(/テキーラ|メスカル/.test(n))return 'テキーラ';
+    if(/梅酒|果実酒/.test(n))return '果実酒'; return normBase(n)||'その他';}
+  const lq=ings.find(i=>i.kind==='liqueur');
+  if(lq){const n=str(lq.name).normalize('NFKC');
+    if(/梅酒|果実酒/.test(n))return '果実酒'; if(/コーヒー|カルーア|カフェ/.test(n))return 'コーヒー'; return 'リキュール';}
+  return 'その他';
+}
+const baseKeyOf=r=>r.base||'その他';
+function baseInfo(k){
+  if(BASE_MAP[k])return BASE_MAP[k];
+  if(k==='その他')return {key:k,label:'その他',short:'その他',slug:'other'};
+  return {key:k,label:k+'ベース',short:k,slug:'other'};
+}
+const headingOf=k=>baseInfo(k).label;
+const colorOf=k=>`var(--c-${baseInfo(k).slug})`;
+const BASE_RANK=k=>{const i=BASES.findIndex(b=>b.key===k);return i>=0?i:(k==='その他'?1e6:1e3);};
 
 /* ---------- seed data (from レシピカンペ20260114) ---------- */
-const TAG_SUGGEST=['フルーティ','ドライ','甘口','さっぱり','ほろ苦い','強め','オリジナル'];
+const TAG_SUGGEST=['フルーティ','ドライ','甘口','さっぱり','ほろ苦い','強め'];
+const CAT_SUGGEST=['メニュー','オリジナル','RinneDex','試作','ノンアル','ホット','卵黄','卵白'];   // 区分タグ（この順で並べる）
 const SEED_TAGS={'seed-01':['さっぱり'],'seed-02':['さっぱり','ドライ'],'seed-03':['さっぱり'],'seed-04':['さっぱり'],'seed-05':['ほろ苦い','強め'],
- 'seed-06':['さっぱり'],'seed-07':['ドライ','さっぱり'],'seed-08':['ドライ','強め'],'seed-09':['フルーティ','オリジナル'],'seed-10':['さっぱり'],
+ 'seed-06':['さっぱり'],'seed-07':['ドライ','さっぱり'],'seed-08':['ドライ','強め'],'seed-09':['フルーティ'],'seed-10':['さっぱり'],
  'seed-11':['フルーティ','甘口'],'seed-12':['トマト'],'seed-13':['甘口','強め'],'seed-14':['さっぱり','フルーティ'],'seed-15':['ドライ','さっぱり'],
- 'seed-16':['さっぱり','オリジナル'],'seed-17':['ドライ','さっぱり'],'seed-18':['さっぱり']};
+ 'seed-16':['さっぱり'],'seed-17':['ドライ','さっぱり'],'seed-18':['さっぱり']};
 const normTag=t=>str(t).normalize('NFKC').replace(/\s+/g,' ').trim().slice(0,20);
-function cleanTags(x){
-  const raw=Array.isArray(x.tags)?x.tags:(SEED_TAGS[str(x.id)]||[]);
-  const out=[],seen=new Set();
-  const push=t=>{t=normTag(t);const k=t.toLowerCase();if(t&&!seen.has(k)){seen.add(k);out.push(t);}};
-  raw.forEach(push); if(x.original)push('オリジナル');   // 旧バージョンの ★オリジナル を移行
-  return out;
-}
+// タグの正規化（空白の整理・重複除去）
+function cleanList(arr){const out=[],seen=new Set();(Array.isArray(arr)?arr:[]).forEach(t=>{t=normTag(t);const k=t.toLowerCase();if(t&&!seen.has(k)){seen.add(k);out.push(t);}});return out;}
 const I=(name,amount,kind,x)=>Object.assign({name,amount,kind,gauge:true,float:false,icon:'',note:''},x||{});
-const R=(id,name,base,techniques,glass,ings,x)=>Object.assign({id,name,base,techniques,glass,tags:[],memo:'',ings},x||{});
+const R=(id,name,base,techniques,glassType,ings,x)=>Object.assign({id,name,base,techniques,glassType,cats:[],tags:[],memo:'',shaker:techniques.includes('シェイク'),ings},x||{});
 const SEED=[
- R('seed-01','ジントニック','ジン',['ビルド'],'タンブラー',[I('ジン','30','base'),I('カットライム','1/6','garnish',{icon:'wedge'}),I('トニック','fill','mixer'),I('ソーダ','15','mixer')]),
- R('seed-02','ジンリッキー','ジン',['ビルド'],'タンブラー',[I('ジン','30','base'),I('カットライム','2/6','garnish',{icon:'wedge'}),I('ソーダ','fill','mixer')]),
- R('seed-03','ジンバック','ジン',['ビルド'],'タンブラー',[I('ジン','30','base'),I('レモン J','15','juice'),I('スライスレモン','','garnish',{icon:'wedge'}),I('ジンジャーエール','fill','mixer')]),
- R('seed-04','ジンフィズ','ジン',['ビルド','シェイク'],'タンブラー',[I('ジン','30','base'),I('レモン J','15','juice'),I('シロップ','1tsp','juice'),I('ソーダ','fill','mixer')]),
- R('seed-05','ネグローニ','ジン',['ステア'],'ロックグラス',[I('ジン','30','base'),I('カンパリ','20','liqueur'),I('スイートベルモット','20','liqueur'),I('オレンジピール','','garnish',{icon:'circle'})]),
- R('seed-06','ホワイト レディ','ジン',['シェイク'],'カクテル',[I('ジン','30','base'),I('コアントロー','15','liqueur'),I('レモン J','15','juice')]),
- R('seed-07','ギムレット','ジン',['シェイク'],'カクテル',[I('ジン','40','base'),I('ライム J','20','juice'),I('シロップ','1tsp','juice')]),
- R('seed-08','マティーニ','ジン',['ステア'],'カクテル',[I('ジン','45','base'),I('ドライベルモット','15','liqueur'),I('オレンジビターズ','1dash','liqueur',{icon:'drop'}),I('オリーブ','','garnish'),I('レモンピール','','garnish',{icon:'twist'})]),
- R('seed-09','マスカットティー サイドカー','ジン',['シェイク'],'カクテル',[I('ティフィン','20','liqueur'),I('ミスティア','10','liqueur'),I('ジン','15','base'),I('レモン J','15','juice')]),
- R('seed-10','モスコーミュール','ウォッカ',['ビルド'],'タンブラー',[I('ウォッカ','30','base'),I('ライム J','15','juice'),I('カットライム','','garnish',{icon:'wedge'}),I('ジンジャーエール','fill','mixer')]),
- R('seed-11','スクリュードライバー','ウォッカ',['ビルド'],'コリンズ',[I('ウォッカ','30','base'),I('オレンジ J','fill','juice')]),
- R('seed-12','ブラッディマリー','ウォッカ',['ビルド'],'タンブラー',[I('ウォッカ','30','base'),I('オレンジ J','15','juice'),I('トマト J','fill','juice'),I('レモンスライス','','garnish',{icon:'circle'})]),
- R('seed-13','ブラックルシアン','ウォッカ',['ビルド'],'ロックグラス',[I('ウォッカ','40','base'),I('カルーア','20','liqueur')]),
- R('seed-14','ソルティドッグ','ウォッカ',['ビルド'],'ロックグラス',[I('塩スノー','','garnish',{icon:'circle'}),I('ウォッカ','30','base'),I('グレフル J','60','juice',{gauge:false})]),
- R('seed-15','カミカゼ','ウォッカ',['シェイク'],'ロックグラス',[I('ウォッカ','30','base'),I('コアントロー','15','liqueur'),I('ライム J','15','juice')]),
- R('seed-16','ミント カミカゼ','ウォッカ',['シェイク'],'ロックグラス',[I('ウォッカ','30','base'),I('コアントロー','15','liqueur'),I('レモン J','15','juice'),I('ミントリキュール','1tsp','liqueur',{float:true,note:'沈める'})]),
- R('seed-17','バラライカ','ウォッカ',['シェイク'],'ロックグラス',[I('ウォッカ','30','base'),I('コアントロー','15','liqueur'),I('レモン J','15','juice')]),
- R('seed-18','アクア','ウォッカ',['シェイク','ビルド'],'シャンパングラス',[I('ウォッカ','30','base'),I('ミントリキュール','20','liqueur'),I('ライム J','10','juice'),I('トニック','fill','mixer')])
-].map((r,k)=>Object.assign(r,{order:(k+1)*10,tags:SEED_TAGS[r.id]||[],equip:legacyEquip(r.techniques,r.ings)}));
+ R('seed-01','ジントニック','ジン',['ビルド'],'tumbler',[I('ジン','30','base'),I('カットライム','1/6','garnish',{icon:'wedge'}),I('トニック','fill','mixer',{icon:'soda'}),I('ソーダ','15','mixer')]),
+ R('seed-02','ジンリッキー','ジン',['ビルド'],'tumbler',[I('ジン','30','base'),I('カットライム','2/6','garnish',{icon:'wedge'}),I('ソーダ','fill','mixer',{icon:'soda'})]),
+ R('seed-03','ジンバック','ジン',['ビルド'],'tumbler',[I('ジン','30','base'),I('レモン J','15','juice'),I('スライスレモン','','garnish',{icon:'wedge'}),I('ジンジャーエール','fill','mixer',{icon:'soda'})]),
+ R('seed-04','ジンフィズ','ジン',['ビルド','シェイク'],'tumbler',[I('ジン','30','base'),I('レモン J','15','juice'),I('シロップ','1tsp','juice'),I('ソーダ','fill','mixer',{icon:'soda'})]),
+ R('seed-05','ネグローニ','ジン',['ステア'],'rocks',[I('ジン','30','base'),I('カンパリ','20','liqueur'),I('スイートベルモット','20','liqueur'),I('オレンジピール','','garnish',{icon:'circle'})]),
+ R('seed-06','ホワイト レディ','ジン',['シェイク'],'cocktail',[I('ジン','30','base'),I('コアントロー','15','liqueur'),I('レモン J','15','juice')]),
+ R('seed-07','ギムレット','ジン',['シェイク'],'cocktail',[I('ジン','40','base'),I('ライム J','20','juice'),I('シロップ','1tsp','juice')]),
+ R('seed-08','マティーニ','ジン',['ステア'],'cocktail',[I('ジン','45','base'),I('ドライベルモット','15','liqueur'),I('オレンジビターズ','1dash','liqueur',{icon:'drop'}),I('オリーブ','','garnish'),I('レモンピール','','garnish',{icon:'twist'})]),
+ R('seed-09','マスカットティー サイドカー','ジン',['シェイク'],'cocktail',[I('ティフィン','20','liqueur'),I('ミスティア','10','liqueur'),I('ジン','15','base'),I('レモン J','15','juice')]),
+ R('seed-10','モスコーミュール','ウォッカ',['ビルド'],'tumbler',[I('ウォッカ','30','base'),I('ライム J','15','juice'),I('カットライム','','garnish',{icon:'wedge'}),I('ジンジャーエール','fill','mixer',{icon:'soda'})]),
+ R('seed-11','スクリュードライバー','ウォッカ',['ビルド'],'collins',[I('ウォッカ','30','base'),I('オレンジ J','fill','juice',{icon:'juice'})]),
+ R('seed-12','ブラッディマリー','ウォッカ',['ビルド'],'tumbler',[I('ウォッカ','30','base'),I('オレンジ J','15','juice'),I('トマト J','fill','juice',{icon:'juice'}),I('レモンスライス','','garnish',{icon:'circle'})]),
+ R('seed-13','ブラックルシアン','ウォッカ',['ビルド'],'rocks',[I('ウォッカ','40','base'),I('カルーア','20','liqueur')]),
+ R('seed-14','ソルティドッグ','ウォッカ',['ビルド'],'rocks',[I('塩スノー','','garnish',{icon:'circle'}),I('ウォッカ','30','base'),I('グレフル J','60','juice',{gauge:false})]),
+ R('seed-15','カミカゼ','ウォッカ',['シェイク'],'rocks',[I('ウォッカ','30','base'),I('コアントロー','15','liqueur'),I('ライム J','15','juice')]),
+ R('seed-16','ミント カミカゼ','ウォッカ',['シェイク'],'rocks',[I('ウォッカ','30','base'),I('コアントロー','15','liqueur'),I('レモン J','15','juice'),I('ミントリキュール','1tsp','liqueur',{float:true,note:'沈める'})]),
+ R('seed-17','バラライカ','ウォッカ',['シェイク'],'rocks',[I('ウォッカ','30','base'),I('コアントロー','15','liqueur'),I('レモン J','15','juice')]),
+ R('seed-18','アクア','ウォッカ',['シェイク','ビルド'],'flute',[I('ウォッカ','30','base'),I('ミントリキュール','20','liqueur'),I('ライム J','10','juice'),I('トニック','fill','mixer',{icon:'soda'})])
+].map((r,k)=>Object.assign(r,{order:(k+1)*10,tags:SEED_TAGS[r.id]||[],cats:['seed-09','seed-16'].includes(r.id)?['オリジナル']:[]}));
 
 /* ---------- sanitize ---------- */
 function sanIng(x){
@@ -405,15 +562,25 @@ function sanIng(x){
   const name=str(x.name).trim(); if(!name)return null;
   return {name,amount:str(x.amount).trim(),kind:KINDS[x.kind]?x.kind:guessKind(name),gauge:x.gauge!==false,float:!!x.float,icon:ICONS[x.icon]!==undefined?x.icon:'',note:str(x.note).trim()};
 }
+// 価格: 「1,200」「￥900」「900円」などを数値に。空欄・読めないものは null
+function parsePrice(v){
+  if(typeof v==='number')return Number.isFinite(v)&&v>=0?Math.round(v):null;
+  const t=str(v).normalize('NFKC').replace(/[,\s円¥￥]/g,'');
+  return /^\d+$/.test(t)?parseInt(t,10):null;
+}
+function sanitizeGlass(x){
+  const glassType=GLASS_MAP[x.glassType]?x.glassType:'other';
+  return {glassType,glassLabel:glassType==='other'?str(x.glassLabel).trim().slice(0,20):''};
+}
 function sanitizeRecipe(x){
   if(!x||typeof x!=='object')return null;
   const name=str(x.name).trim(); if(!name)return null;
   const techniques=(Array.isArray(x.techniques)?x.techniques:[]).map(str).filter(Boolean);
   const ings=(Array.isArray(x.ings)?x.ings:[]).map(sanIng).filter(Boolean);
-  const equip=normEquip(Array.isArray(x.equip)?x.equip:legacyEquip(techniques,ings));   // 旧データはここで自動復元
-  return {id:str(x.id)||uid(),name,tags:cleanTags(x),base:str(x.base).trim(),
-    techniques,glass:str(x.glass).trim(),memo:str(x.memo),order:Number.isFinite(+x.order)?+x.order:0,
-    equip,ings};
+  const {glassType,glassLabel}=sanitizeGlass(x);
+  return {id:str(x.id)||uid(),name,tags:cleanList(x.tags),cats:cleanList(x.cats),base:normBase(x.base),
+    techniques,glassType,glassLabel,shaker:!!x.shaker,memo:str(x.memo),price:parsePrice(x.price),order:Number.isFinite(+x.order)?+x.order:0,
+    ings};
 }
 
 /* ---------- storage (IndexedDB, in-memory fallback) ---------- */
@@ -443,14 +610,18 @@ const setMeta=(k,v)=>guard(()=>tx('meta','readwrite',s=>{s.put({key:k,value:v});
 async function getMeta(k){if(!db)return undefined;try{const v=await tx('meta','readonly',s=>s.get(k));return v&&v.value;}catch{return undefined;}}
 const byOrder=(a,b)=>a.order-b.order;
 
-/* ---------- filter state ---------- */
-const F={q:'',spirits:new Set(),techs:new Set(),tags:new Set(),ings:new Set(),ingMode:'all'};
-const filterActive=()=>F.q.trim()||F.spirits.size||F.techs.size||F.tags.size||F.ings.size;
+/* ---------- tab state (大分類=ベース / 中分類=技法) + 補助フィルター ---------- */
+let activeBase='all', activeTech='all';
+const F={q:'',cats:new Set(),tags:new Set(),ings:new Set(),ingMode:'all'};
+const filterActive=()=>F.q.trim()||F.cats.size||F.tags.size||F.ings.size||activeBase!=='all'||activeTech!=='all';
+/* 表示の切り替え（端末ごとに記憶） */
+let viewMode='detail', sortMode='order';
+try{const v=localStorage.getItem('kanpe-view');if(v==='compact')viewMode=v;const o=localStorage.getItem('kanpe-sort');if(o==='name')sortMode=o;}catch{}
+const openRows=new Set();
 const subIngs=r=>r.ings.filter(i=>SUB_KINDS.includes(i.kind));
-function haystack(r){return norm([r.name,r.base,r.glass,r.techniques.join(''),r.memo,r.tags.join(' '),...r.ings.map(i=>i.name+i.amount+i.note)].join(' '));}
-function matches(r){
-  if(F.spirits.size&&!r.ings.some(i=>i.kind==='base'&&F.spirits.has(i.name)))return false;
-  if(F.techs.size&&!r.techniques.some(t=>F.techs.has(t)))return false;
+function haystack(r){return norm([r.name,r.base,headingOf(baseKeyOf(r)),glassLabelOf(r),r.techniques.join(''),r.memo,r.cats.join(' '),r.tags.join(' '),...r.ings.map(i=>i.name+i.amount+i.note)].join(' '));}
+function auxMatches(r){          // タブ(大分類/中分類)を除いた、検索・区分・味わい・材料の絞り込み
+  if(F.cats.size&&!r.cats.some(t=>F.cats.has(t)))return false;
   if(F.tags.size&&!r.tags.some(t=>F.tags.has(t)))return false;
   if(F.ings.size){
     const have=new Set(subIngs(r).map(i=>i.name));const want=[...F.ings];
@@ -460,50 +631,97 @@ function matches(r){
   if(toks.length){const h=haystack(r);if(!toks.every(t=>h.includes(t)))return false;}
   return true;
 }
+function matches(r){
+  if(activeBase!=='all'&&baseKeyOf(r)!==activeBase)return false;
+  if(activeTech!=='all'&&!r.techniques.includes(activeTech))return false;
+  return auxMatches(r);
+}
 
 /* ---------- rendering ---------- */
-function cardInner(r){
-  const meta=[r.techniques.join('+'),r.glass].filter(Boolean).join(' / ');
-  const g=gaugeOf(r), icons=iconsOf(r);
-  const tg=r.tags.length?`<div class="tg">${r.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>`:'';
+function cardInner(r,showCat){
+  const meta=[r.techniques.join('+'),glassLabelOf(r)].filter(Boolean).join(' / ');
+  const cat=showCat?`<span class="cat"><i class="cdot"></i>${esc(baseInfo(baseKeyOf(r)).short)}</span>`:'';
+  const g=gaugeOf(r), icons=iconsOf(r), gl=glassOf(r);
+  const giIcon=(gl&&gl.icon)?`<svg class="gi" viewBox="0 0 32 40" aria-hidden="true"><use href="#${gl.icon}"/></svg>`:'';
+  const tg=(r.cats.length||r.tags.length)?`<div class="tg">${r.cats.map(t=>`<span class="c">${esc(t)}</span>`).join('')}${r.tags.map(t=>`<span>${esc(t)}</span>`).join('')}</div>`:'';
   const gauge=g.tones.length?`<div class="gauge" aria-hidden="true" style="--n:${g.tones.length}">${g.tones.map(t=>`<i class="t-${t}"></i>`).join('')}</div>`:'';
   const ic=icons.length?`<div class="icons" aria-hidden="true">${icons.map(n=>`<svg class="ic" viewBox="0 0 32 40"><use href="#i-${n}"/></svg>`).join('')}</div>`:'';
   const fl=g.float?`<div class="gauge" aria-hidden="true" style="--n:${g.float}">${'<i class="t-float"></i>'.repeat(g.float)}</div>`:'';
   const labels=r.ings.map(i=>`<span class="lb">${esc(i.name)}${i.amount?` <span class="am">${esc(i.amount)}</span>`:''}${i.note?`<span class="nt">（${esc(i.note)}）</span>`:''}</span>`).join('');
-  return `<div class="nm"><b>${esc(r.name)}</b>${meta?`<small>${esc(meta)}</small>`:''}${tg}</div>
+  return `<div class="nm"><span class="nm-h">${giIcon}<b>${esc(r.name)}</b></span>${(cat||meta)?`<small>${cat}${esc(meta)}</small>`:''}${tg}</div>
   <div class="box"><div class="gr">${gauge}${ic}${fl}</div><div class="labels">${labels||'<span class="nt">材料が未登録です</span>'}</div>${r.memo?`<div class="memo">${esc(r.memo)}</div>`:''}</div>`;
 }
-function groupKeys(list){
-  const keys=[...new Set(list.map(r=>r.base||'その他'))];
-  const rank=k=>{if(k==='その他')return 1e6;const i=BASE_ORDER.indexOf(k);return i>=0?i:100+keys.indexOf(k);};
-  return keys.sort((a,b)=>rank(a)-rank(b));
+const byBaseThenOrder=(a,b)=>BASE_RANK(baseKeyOf(a))-BASE_RANK(baseKeyOf(b))||baseKeyOf(a).localeCompare(baseKeyOf(b),'ja')
+  ||(sortMode==='name'?(a.name.localeCompare(b.name,'ja')||a.order-b.order):a.order-b.order);
+function compactRow(r,showCat){
+  const gl=glassOf(r),open=openRows.has(r.id);
+  const gi=(gl&&gl.icon)?`<svg class="gi" viewBox="0 0 32 40" aria-hidden="true"><use href="#${gl.icon}"/></svg>`:'';
+  const ing=r.ings.map(i=>i.name+(i.amount?' '+i.amount:'')).join('・')||'材料が未登録です';
+  const meta=`${showCat?`<i class="cdot"></i>${esc(baseInfo(baseKeyOf(r)).short)}`:''}${r.techniques.length?`<span>${esc(r.techniques.join('+'))}</span>`:''}`;
+  return `<div class="crow${open?' open':''}" style="--c:${colorOf(baseKeyOf(r))}"><button type="button" class="cbtn" data-toggle="${esc(r.id)}" aria-expanded="${open}"><span class="c-nm">${gi}<b>${esc(r.name)}</b></span><span class="c-ing">${esc(ing)}</span><span class="c-meta">${meta}</span><span class="chev" aria-hidden="true">▾</span></button>${
+    open?`<button type="button" class="card" style="--c:${colorOf(baseKeyOf(r))}" data-id="${esc(r.id)}" aria-label="${esc(r.name)}を編集">${cardInner(r,false)}</button>`:''}</div>`;
 }
 function renderList(){
-  const list=recipes.filter(matches);
+  const list=recipes.filter(matches).sort(byBaseThenOrder);
+  document.querySelectorAll('#sortSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sort===sortMode)));
+  document.querySelectorAll('#viewSeg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===viewMode)));
   const total=recipes.length, act=!!filterActive();
   $('#count').textContent=act?`${list.length}件 / 全${total}件`:`全${total}件`;
   $('#clearF').hidden=!act;
   const box=$('#list');
   if(!total){box.innerHTML=`<div class="empty"><p>まだレシピがありません。</p><button class="btn primary" data-act="add">＋ レシピを追加</button></div>`;return;}
-  if(!list.length){box.innerHTML=`<div class="empty"><p>該当するレシピがありません。</p><button class="btn" data-act="clear">絞り込みを解除</button></div>`;return;}
-  box.innerHTML=groupKeys(list).map(k=>`<section class="section"><h2>${esc(headingOf(k))}</h2><div class="grid">${
-    list.filter(r=>(r.base||'その他')===k).map(r=>`<button type="button" class="card" data-id="${esc(r.id)}" aria-label="${esc(r.name)}を編集">${cardInner(r)}</button>`).join('')
-  }</div></section>`).join('');
+  if(!list.length){
+    if(activeBase!=='all'&&!recipes.some(r=>baseKeyOf(r)===activeBase)){
+      const h=headingOf(activeBase);
+      box.innerHTML=`<div class="empty"><p>「${esc(h)}」のレシピはまだありません。</p><button class="btn primary" data-act="add">＋ ${esc(h)}のレシピを追加</button></div>`;return;}
+    box.innerHTML=`<div class="empty"><p>該当するレシピがありません。</p><button class="btn" data-act="clear">絞り込みを解除</button></div>`;return;}
+  const showCat=activeBase==='all';
+  if(viewMode==='compact'){box.innerHTML=`<div class="clist">${list.map(r=>compactRow(r,showCat)).join('')}</div>`;return;}
+  box.innerHTML=`<div class="grid">${list.map(r=>`<button type="button" class="card" style="--c:${colorOf(baseKeyOf(r))}" data-id="${esc(r.id)}" aria-label="${esc(r.name)}を編集">${cardInner(r,showCat)}</button>`).join('')}</div>`;
 }
-const chip=(k,v,label,n,on)=>`<button type="button" class="chip" data-k="${k}" data-v="${esc(v)}" aria-pressed="${on}">${esc(label)}${n!=null?` <em>${n}</em>`:''}</button>`;
+const tabBtn=(cls,k,v,label,n,on)=>`<button type="button" class="${cls}" data-k="${k}" data-v="${esc(v)}" aria-pressed="${on}">${esc(label)}${n!=null?` <em>${n}</em>`:''}</button>`;
 function countBy(fn){const m=new Map();recipes.forEach(r=>{new Set(fn(r)).forEach(v=>m.set(v,(m.get(v)||0)+1));});return m;}
+function baseTabList(){      // 固定の大分類 + データにだけある大分類（あれば）+ その他（あれば）
+  const keys=new Set(recipes.map(baseKeyOf));
+  const extra=[...keys].filter(k=>!BASE_MAP[k]&&k!=='その他').sort((a,b)=>a.localeCompare(b,'ja'));
+  return [...BASES,...extra.map(baseInfo),...(keys.has('その他')?[baseInfo('その他')]:[])];
+}
+function techTabList(){ return [...new Set([...TECHS,...recipes.flatMap(r=>r.techniques)])]; }
+function renderTabs(){
+  const root=document.documentElement;
+  // 大分類（ベース）: 中分類＋補助フィルターは適用、大分類自身は無視して集計
+  const baseCount=new Map();
+  recipes.forEach(r=>{ if(activeTech!=='all'&&!r.techniques.includes(activeTech))return; if(!auxMatches(r))return;
+    const k=baseKeyOf(r); baseCount.set(k,(baseCount.get(k)||0)+1); });
+  const bases=baseTabList();
+  if(activeBase!=='all'&&!bases.some(b=>b.key===activeBase))activeBase='all';
+  const allBaseN=[...baseCount.values()].reduce((a,b)=>a+b,0);
+  const bBtn=(b,n,on)=>`<button type="button" class="tab${n?'':' zero'}" data-k="base" data-v="${esc(b.key)}" style="--c:${b.key==='all'?'var(--ink)':colorOf(b.key)}" aria-pressed="${on}"><i class="dot"></i><span class="tl">${esc(b.key==='all'?'すべて':b.short)}</span><em>${n}</em></button>`;
+  $('#tabsBase').innerHTML=[bBtn({key:'all'},allBaseN,activeBase==='all'),...bases.map(b=>bBtn(b,baseCount.get(b.key)||0,activeBase===b.key))].join('');
+  // 選択中の大分類の色を、中分類タブの選択色に使う
+  if(activeBase==='all'){root.style.setProperty('--cur','var(--ink)');root.style.setProperty('--on-cur','var(--bg)');}
+  else{const c=colorOf(activeBase);root.style.setProperty('--cur',c);root.style.setProperty('--on-cur','var(--on-c)');}
+
+  // 中分類（技法）: 大分類＋補助フィルターは適用、中分類自身は無視して集計
+  const techCount=new Map();let allTechN=0;
+  recipes.forEach(r=>{ if(activeBase!=='all'&&baseKeyOf(r)!==activeBase)return; if(!auxMatches(r))return; allTechN++;
+    new Set(r.techniques).forEach(t=>techCount.set(t,(techCount.get(t)||0)+1)); });
+  const techs=techTabList();
+  if(activeTech!=='all'&&!techs.includes(activeTech))activeTech='all';
+  const tBtn=(v,label,icon,n,on)=>`<button type="button" class="railbtn${n?'':' zero'}" data-k="tech" data-v="${esc(v)}" aria-pressed="${on}">${icon?`<svg class="ri" viewBox="0 0 32 40" aria-hidden="true"><use href="#${icon}"/></svg>`:'<span class="ri"></span>'}<span class="rl">${esc(label)}</span><em>${n}</em></button>`;
+  $('#tabsTech').innerHTML='<p class="rail-h">技法</p>'+[tBtn('all','すべて','t-all',allTechN,activeTech==='all'),
+    ...techs.map(t=>tBtn(t,t,TECH_ICON[t]||'',techCount.get(t)||0,activeTech===t))].join('');
+}
 function renderFilters(){
-  const sp=countBy(r=>r.ings.filter(i=>i.kind==='base').map(i=>i.name));
-  const spKeys=[...sp.keys()].sort((a,b)=>{const ra=BASE_ORDER.indexOf(a),rb=BASE_ORDER.indexOf(b);return (ra<0?99:ra)-(rb<0?99:rb)||sp.get(b)-sp.get(a);});
-  $('#fSpirit').innerHTML=spKeys.length?spKeys.map(k=>chip('spirit',k,k,sp.get(k),F.spirits.has(k))).join(''):'<span class="nt">—</span>';
-  const tc=countBy(r=>r.techniques);
-  const tKeys=[...new Set([...TECHS,...tc.keys()])].filter(t=>tc.has(t));
-  $('#fTech').innerHTML=tKeys.length?tKeys.map(k=>chip('tech',k,k,tc.get(k),F.techs.has(k))).join(''):'<span class="nt">—</span>';
+  const ctc=countBy(r=>r.cats);
+  const ctKeys=[...ctc.keys()].sort((a,b)=>{const ia=CAT_SUGGEST.indexOf(a),ib=CAT_SUGGEST.indexOf(b);
+    return (ia<0?99:ia)-(ib<0?99:ib)||ctc.get(b)-ctc.get(a)||a.localeCompare(b,'ja');});
+  $('#fCat').innerHTML=ctKeys.length?ctKeys.map(k=>tabBtn('chip','cat',k,k,ctc.get(k),F.cats.has(k))).join(''):'<span class="nt">（レシピに区分タグを付けると、ここに並びます）</span>';
+  F.cats.forEach(v=>{if(!ctc.has(v))F.cats.delete(v);});
   const tgc=countBy(r=>r.tags);
   const tgKeys=[...tgc.keys()].sort((a,b)=>tgc.get(b)-tgc.get(a)||a.localeCompare(b,'ja'));
-  $('#fTag').innerHTML=tgKeys.length?tgKeys.map(k=>chip('tag',k,k,tgc.get(k),F.tags.has(k))).join(''):'<span class="nt">（レシピにタグを付けると、ここに並びます）</span>';
-  // 編集・削除で存在しなくなった選択は外す
-  [[F.spirits,sp],[F.techs,tc],[F.tags,tgc]].forEach(([set,m])=>set.forEach(v=>{if(!m.has(v))set.delete(v);}));
+  $('#fTag').innerHTML=tgKeys.length?tgKeys.map(k=>tabBtn('chip','tag',k,k,tgc.get(k),F.tags.has(k))).join(''):'<span class="nt">（レシピにタグを付けると、ここに並びます）</span>';
+  F.tags.forEach(v=>{if(!tgc.has(v))F.tags.delete(v);});
   // 副材料・割り材: 材料名ごとに集計し、最頻の区分でグループ化
   const stat=new Map();
   recipes.forEach(r=>{const seen=new Set();r.ings.forEach(i=>{if(!SUB_KINDS.includes(i.kind)||seen.has(i.name))return;seen.add(i.name);
@@ -511,12 +729,13 @@ function renderFilters(){
   const groups={liqueur:[],juice:[],mixer:[]};
   stat.forEach((s,name)=>{const kind=Object.entries(s.kinds).sort((a,b)=>b[1]-a[1])[0][0];groups[kind].push([name,s.n]);});
   $('#fIng').innerHTML=SUB_KINDS.filter(k=>groups[k].length).map(k=>`<div><p class="sub">${KINDS[k]}</p><div class="chips">${
-    groups[k].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ja')).map(([n,c])=>chip('ing',n,n,c,F.ings.has(n))).join('')}</div></div>`).join('')||'<span class="nt">—</span>';
+    groups[k].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'ja')).map(([n,c])=>tabBtn('chip','ing',n,n,c,F.ings.has(n))).join('')}</div></div>`).join('')||'<span class="nt">—</span>';
   F.ings.forEach(n=>{if(!stat.has(n))F.ings.delete(n);});
   const bd=$('#ingBadge');bd.hidden=!F.ings.size;bd.textContent=F.ings.size;
-  document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===F.ingMode)));
+  document.querySelectorAll('.seg button[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===F.ingMode)));
 }
-function render(){renderFilters();renderList();updateToTop();}
+function syncHeaderHeight(){document.documentElement.style.setProperty('--head-h',$('.top').offsetHeight+'px');}
+function render(){renderTabs();renderFilters();renderList();updateToTop();requestAnimationFrame(syncHeaderHeight);}
 
 /* ---------- toast / confirm ---------- */
 let tt;
@@ -530,26 +749,27 @@ function choose(msg,btns,title='確認'){return new Promise(res=>{
   d.showModal();
 });}
 
+/* ---------- 同じ名前のレシピ ---------- */
+const nameKey=s=>norm(s).replace(/[・･·\-‐.,、，()（）]/g,'');
+const sameName=(name,exceptId)=>{const k=nameKey(name);return k?recipes.filter(r=>r.id!==exceptId&&nameKey(r.name)===k):[];};
+const dupLabel=list=>list.slice(0,3).map(r=>`「${r.name}」（${headingOf(baseKeyOf(r))}）`).join('、')+(list.length>3?` ほか${list.length-3}件`:'');
+function checkDup(){const d=draft?sameName(draft.name,draft.id):[];const el=$('#edDup');el.hidden=!d.length;el.textContent=d.length?`同じ名前のレシピがあります: ${dupLabel(d)}`:'';return d;}
+
 /* ---------- editor ---------- */
-let draft=null, draftSnap='', dlgOpen=false;
+let draft=null, draftSnap='';
 const newIng=(kind='liqueur')=>({name:'',amount:'',kind,gauge:true,float:false,icon:'',note:'',_kt:false,_it:false});
-const strip=d=>({id:d.id,name:d.name,tags:d.tags,base:d.base,techniques:d.techniques,glass:d.glass,memo:d.memo,equip:d.equip,ings:d.ings.map(i=>({name:i.name,amount:i.amount,kind:i.kind,gauge:i.gauge,float:i.float,icon:i.icon,note:i.note}))});
+const strip=d=>({id:d.id,name:d.name,cats:d.cats,tags:d.tags,base:d.base,techniques:d.techniques,glassType:d.glassType,glassLabel:d.glassLabel,shaker:d.shaker,memo:d.memo,price:d.price,ings:d.ings.map(i=>({name:i.name,amount:i.amount,kind:i.kind,gauge:i.gauge,float:i.float,icon:i.icon,note:i.note}))});
 const isDirty=()=>JSON.stringify(strip(draft))!==draftSnap;
-function previewRecipe(){return {id:'preview',name:draft.name||'（レシピ名）',tags:draft.tags,base:draft.base,techniques:draft.techniques,glass:draft.glass,memo:draft.memo,equip:draft.equip,ings:draft.ings.filter(i=>i.name.trim())};}
-function updatePreview(){$('#edPreview').innerHTML=`<div class="card">${cardInner(previewRecipe())}</div>`;}
+function previewRecipe(){return {id:'preview',name:draft.name||'（レシピ名）',cats:draft.cats,tags:draft.tags,base:draftBaseKey(),techniques:draft.techniques,glassType:draft.glassType,glassLabel:draft.glassLabel,shaker:draft.shaker,memo:draft.memo,ings:draft.ings.filter(i=>i.name.trim())};}
+function draftBaseKey(){return draft.base||guessBase(draft.ings.filter(i=>i.name.trim()));}
+function updatePreview(){const k=draftBaseKey();$('#edPreview').innerHTML=`<div class="card" style="--c:${colorOf(k)}">${cardInner(previewRecipe(),true)}</div>`;}
 function renderTechChips(){
   const all=[...new Set([...TECHS,...draft.techniques])];
   $('#fTechs').innerHTML=all.map(t=>{const idx=draft.techniques.indexOf(t);
     return `<button type="button" class="chip" data-tech="${esc(t)}" aria-pressed="${idx>=0}">${idx>=0?(idx+1)+'. ':''}${esc(t)}</button>`;}).join('');
 }
-function renderEquipChips(){
-  $('#fEquip').innerHTML=EQUIP_ORDER.map(k=>`<button type="button" class="chip" data-eq="${k}" aria-pressed="${draft.equip.includes(k)}">${esc(EQUIP_LABEL[k])}</button>`).join('');
-}
-function autoEquip(){        // 技法・材料の区分から、まだ手を付けていなければ自動で候補を入れる
-  if(draft._equipTouched)return;
-  draft.equip=legacyEquip(draft.techniques,draft.ings);
-  renderEquipChips();
-}
+function autoShaker(){ if(!draft._shakerTouched){draft.shaker=draft.techniques.includes('シェイク');$('#fShaker').checked=draft.shaker;} }
+function syncGlassLabelField(){$('#fGlassLabelWrap').hidden=draft.glassType!=='other';}
 function renderRows(){
   const opt=(o,cur)=>Object.entries(o).map(([v,l])=>`<option value="${esc(v)}"${v===cur?' selected':''}>${esc(l)}</option>`).join('');
   $('#ingRows').innerHTML=draft.ings.map((i,k)=>{const b=blocksOf(i);return `<div class="irow" data-i="${k}">
@@ -565,18 +785,21 @@ function renderRows(){
 }
 function openEditor(id){
   const r=id?recipes.find(x=>x.id===id):null;
-  draft=r?clone(r):{id:null,name:'',tags:[],base:'',techniques:[],glass:'',memo:'',equip:[],ings:[newIng('base'),newIng()]};
+  draft=r?clone(r):{id:null,name:'',cats:[],tags:[],base:activeBase!=='all'?activeBase:'',techniques:[],glassType:'other',glassLabel:'',shaker:false,memo:'',price:null,ings:[newIng('base'),newIng()]};
+  draft.price=draft.price==null?'':String(draft.price);
   draft.ings.forEach(i=>{i._kt=!!r;i._it=!!r;});
-  draft._equipTouched=!!r;
+  draft._shakerTouched=!!r;
   draftSnap=JSON.stringify(strip(draft));
   $('#edTitle').textContent=r?'レシピを編集':'レシピを追加';
-  $('#fName').value=draft.name;$('#fTagIn').value='';$('#fBase').value=draft.base;$('#fGlass').value=draft.glass;$('#fMemo').value=draft.memo;
-  $('#edErr').textContent='';
+  $('#fName').value=draft.name;$('#fTagIn').value='';$('#fCatIn').value='';$('#fMemo').value=draft.memo;$('#fPrice').value=draft.price;
+  const bOpts=[...BASES.map(b=>b.key),...new Set(recipes.map(baseKeyOf).concat(draft.base?[draft.base]:[]).filter(k=>!BASE_MAP[k]&&k!=='その他')),'その他'];
+  $('#fBase').innerHTML=`<option value="">自動（材料から判定）</option>`+[...new Set(bOpts)].map(k=>`<option value="${esc(k)}"${k===draft.base?' selected':''}>${esc(headingOf(k))}</option>`).join('');
+  $('#fGlass').innerHTML=GLASS_TYPES.map(g=>`<option value="${g.key}"${g.key===draft.glassType?' selected':''}>${esc(g.label)}</option>`).join('');
+  $('#fGlassLabel').value=draft.glassLabel;syncGlassLabelField();
+  $('#fShaker').checked=draft.shaker;
+  $('#edErr').textContent='';checkDup();
   $('#edDelete').hidden=!r;$('#edCopy').hidden=!r;
-  const bases=[...new Set([...BASE_ORDER,...recipes.map(x=>x.base).filter(Boolean)])];
-  $('#dlBase').innerHTML=bases.map(b=>`<option value="${esc(b)}">`).join('');
-  $('#dlGlass').innerHTML=[...new Set([...GLASSES,...recipes.map(x=>x.glass).filter(Boolean)])].map(b=>`<option value="${esc(b)}">`).join('');
-  renderTechChips();renderTagChips();renderEquipChips();renderRows();updatePreview();
+  renderTechChips();renderTagChips();renderRows();updatePreview();
   $('#editor').showModal();
   document.querySelector('.ed-body').scrollTop=0;
   if(!r)$('#fName').focus();
@@ -589,13 +812,23 @@ async function requestClose(){
   $('#editor').close();
 }
 async function saveDraft(){
-  if($('#fTagIn').value.trim())addTagFromInput();
+  if($('#fTagIn').value.trim())addTagFromInput('tags');
+  if($('#fCatIn').value.trim())addTagFromInput('cats');
   const name=draft.name.trim();
   if(!name){$('#edErr').textContent='レシピ名を入力してください。';$('#fName').focus();return;}
+  const price=parsePrice(draft.price);
+  if(str(draft.price).trim()&&price==null){$('#edErr').textContent='価格は数字で入力してください（例: 900）。';$('#fPrice').focus();return;}
+  const dup=sameName(name,draft.id);
+  if(dup.length){
+    const v=await choose(`同じ名前のレシピがすでにあります。\n${dupLabel(dup)}\n\nこのまま保存しますか？`,[['戻って編集','stay'],['このまま保存','save']],'重複の確認');
+    if(v!=='save')return;
+  }
   const ings=draft.ings.filter(i=>i.name.trim()).map(i=>({name:i.name.trim(),amount:i.amount.trim(),kind:i.kind,gauge:i.gauge!==false,float:!!i.float,icon:i.icon||'',note:i.note.trim()}));
-  const base=draft.base.trim()||(ings.find(i=>i.kind==='base')||{}).name||'その他';
+  const base=normBase(draft.base)||guessBase(ings);
   const existing=draft.id?recipes.find(x=>x.id===draft.id):null;
-  const rec={id:draft.id||uid(),name,tags:draft.tags.slice(),base,techniques:draft.techniques.slice(),glass:draft.glass.trim(),memo:draft.memo,equip:normEquip(draft.equip),ings,
+  const rec={id:draft.id||uid(),name,cats:draft.cats.slice(),tags:draft.tags.slice(),base,techniques:draft.techniques.slice(),
+    glassType:draft.glassType,glassLabel:draft.glassType==='other'?draft.glassLabel.trim().slice(0,20):'',
+    shaker:!!draft.shaker,memo:draft.memo,price,ings,
     order:existing?existing.order:(recipes.reduce((m,x)=>Math.max(m,x.order),0)+10)};
   const i=recipes.findIndex(x=>x.id===rec.id);
   if(i>=0)recipes[i]=rec;else recipes.push(rec);
@@ -620,64 +853,59 @@ ed.addEventListener('close',()=>{draft=null;});
 $('#edClose').onclick=$('#edCancel').onclick=requestClose;
 $('#eform').addEventListener('submit',e=>{e.preventDefault();saveDraft();});
 $('#edDelete').onclick=deleteDraft;
-$('#edCopy').onclick=()=>{draft.id=null;draft.name=draft.name+'（コピー）';$('#fName').value=draft.name;$('#edTitle').textContent='レシピを追加（複製）';$('#edDelete').hidden=true;$('#edCopy').hidden=true;draftSnap='';updatePreview();$('#fName').focus();};
-$('#fName').oninput=e=>{draft.name=e.target.value;$('#edErr').textContent='';updatePreview();};
-function allTagNames(){return [...new Set([...TAG_SUGGEST,...recipes.flatMap(r=>r.tags),...draft.tags])];}
+$('#edCopy').onclick=()=>{draft.id=null;draft.name=draft.name+'（コピー）';$('#fName').value=draft.name;checkDup();$('#edTitle').textContent='レシピを追加（複製）';$('#edDelete').hidden=true;$('#edCopy').hidden=true;draftSnap='';updatePreview();$('#fName').focus();};
+$('#fName').oninput=e=>{draft.name=e.target.value;$('#edErr').textContent='';checkDup();updatePreview();};
+const TAGF={tags:{sug:TAG_SUGGEST,chips:'#fTagChips',inp:'#fTagIn',add:'#fTagAdd'},cats:{sug:CAT_SUGGEST,chips:'#fCatChips',inp:'#fCatIn',add:'#fCatAdd'}};
+function allTagNames(f){return [...new Set([...TAGF[f].sug,...recipes.flatMap(r=>r[f]),...draft[f]])];}
 function renderTagChips(){
-  $('#fTagChips').innerHTML=allTagNames().map(t=>`<button type="button" class="chip" data-tag="${esc(t)}" aria-pressed="${draft.tags.includes(t)}">${esc(t)}</button>`).join('');
+  ['cats','tags'].forEach(f=>{$(TAGF[f].chips).innerHTML=allTagNames(f).map(t=>`<button type="button" class="chip" data-tag="${esc(t)}" aria-pressed="${draft[f].includes(t)}">${esc(t)}</button>`).join('');});
 }
-function addTagFromInput(){
-  const inp=$('#fTagIn'),t=normTag(inp.value);inp.value='';
+function addTagFromInput(f){
+  const inp=$(TAGF[f].inp),t=normTag(inp.value);inp.value='';
   if(!t)return;
-  if(!draft.tags.some(x=>x.toLowerCase()===t.toLowerCase()))draft.tags.push(t);
+  if(!draft[f].some(x=>x.toLowerCase()===t.toLowerCase()))draft[f].push(t);
   renderTagChips();updatePreview();
 }
-$('#fTagChips').addEventListener('click',e=>{
-  const b=e.target.closest('[data-tag]');if(!b)return;
-  const t=b.dataset.tag,i=draft.tags.indexOf(t);if(i>=0)draft.tags.splice(i,1);else draft.tags.push(t);
-  renderTagChips();updatePreview();
+['cats','tags'].forEach(f=>{
+  $(TAGF[f].chips).addEventListener('click',e=>{
+    const b=e.target.closest('[data-tag]');if(!b)return;
+    const t=b.dataset.tag,i=draft[f].indexOf(t);if(i>=0)draft[f].splice(i,1);else draft[f].push(t);
+    renderTagChips();updatePreview();
+  });
+  $(TAGF[f].add).onclick=()=>addTagFromInput(f);
+  $(TAGF[f].inp).addEventListener('keydown',e=>{      // Enter でフォーム保存が走らないように。IME変換中のEnterは無視
+    if(e.key!=='Enter')return;e.preventDefault();
+    if(!e.isComposing&&e.keyCode!==229)addTagFromInput(f);
+  });
 });
-$('#fTagAdd').onclick=addTagFromInput;
-$('#fTagIn').addEventListener('keydown',e=>{      // Enter でフォーム保存が走らないように。IME変換中のEnterは無視
-  if(e.key!=='Enter')return;e.preventDefault();
-  if(!e.isComposing&&e.keyCode!==229)addTagFromInput();
-});
-$('#fBase').oninput=e=>{draft.base=e.target.value;};
-$('#fGlass').oninput=e=>{draft.glass=e.target.value;updatePreview();};
+$('#fBase').addEventListener('change',e=>{draft.base=e.target.value;updatePreview();});
+$('#fGlass').addEventListener('change',e=>{draft.glassType=e.target.value;syncGlassLabelField();updatePreview();});
+$('#fGlassLabel').addEventListener('input',e=>{draft.glassLabel=e.target.value;updatePreview();});
 $('#fMemo').oninput=e=>{draft.memo=e.target.value;updatePreview();};
+$('#fPrice').oninput=e=>{draft.price=e.target.value;$('#edErr').textContent='';};
+$('#fShaker').addEventListener('change',e=>{draft.shaker=e.target.checked;draft._shakerTouched=true;updatePreview();});
 $('#fTechs').addEventListener('click',e=>{const b=e.target.closest('[data-tech]');if(!b)return;
   const t=b.dataset.tech,i=draft.techniques.indexOf(t);if(i>=0)draft.techniques.splice(i,1);else draft.techniques.push(t);
-  renderTechChips();autoEquip();updatePreview();});
-$('#fEquip').addEventListener('click',e=>{
-  const b=e.target.closest('[data-eq]');if(!b)return;
-  const v=b.dataset.eq;draft._equipTouched=true;
-  if(v==='shaker'){
-    const i=draft.equip.indexOf('shaker');if(i>=0)draft.equip.splice(i,1);else draft.equip.push('shaker');
-  }else{
-    const other=v==='glass'?'glassfizz':'glass';
-    draft.equip=draft.equip.filter(x=>x!==other);
-    const i=draft.equip.indexOf(v);if(i>=0)draft.equip.splice(i,1);else draft.equip.push(v);
-  }
-  draft.equip=normEquip(draft.equip);
-  renderEquipChips();updatePreview();
-});
-$('#addIng').onclick=()=>{draft.ings.push(newIng());renderRows();autoEquip();const rows=document.querySelectorAll('.irow');rows[rows.length-1].querySelector('.in-name').focus();};
+  renderTechChips();autoShaker();updatePreview();});
+$('#addIng').onclick=()=>{draft.ings.push(newIng());renderRows();const rows=document.querySelectorAll('.irow');rows[rows.length-1].querySelector('.in-name').focus();};
 const rowsEl=$('#ingRows');
 rowsEl.addEventListener('input',e=>{
   const row=e.target.closest('.irow');if(!row)return;const i=draft.ings[+row.dataset.i];const c=e.target.classList;
   if(c.contains('in-name')){
     i.name=e.target.value;
-    if(!i._kt){i.kind=guessKind(i.name);row.querySelector('.in-kind').value=i.kind;autoEquip();}
-    if(!i._it){i.icon=guessIcon(i.name);row.querySelector('.in-icon').value=i.icon;}
+    if(!i._kt){i.kind=guessKind(i.name);row.querySelector('.in-kind').value=i.kind;}
   }else if(c.contains('in-amt')){
-    i.amount=e.target.value;const b=blocksOf(i);
-    row.querySelectorAll('.in-gauge,.in-float').forEach(x=>{x.disabled=!b;});
+    i.amount=e.target.value;
   }else if(c.contains('in-note'))i.note=e.target.value;
+  if(c.contains('in-name')||c.contains('in-amt')){
+    if(!i._it){i.icon=guessIcon(i.name,i.amount);row.querySelector('.in-icon').value=i.icon;}
+    const b=blocksOf(i);row.querySelectorAll('.in-gauge,.in-float').forEach(x=>{x.disabled=!b;});
+  }
   updatePreview();
 });
 rowsEl.addEventListener('change',e=>{
   const row=e.target.closest('.irow');if(!row)return;const i=draft.ings[+row.dataset.i];const c=e.target.classList;
-  if(c.contains('in-kind')){i.kind=e.target.value;i._kt=true;autoEquip();}
+  if(c.contains('in-kind')){i.kind=e.target.value;i._kt=true;}
   else if(c.contains('in-icon')){i.icon=e.target.value;i._it=true;}
   else if(c.contains('in-gauge'))i.gauge=e.target.checked;
   else if(c.contains('in-float'))i.float=e.target.checked;
@@ -687,33 +915,39 @@ rowsEl.addEventListener('click',e=>{
   const row=e.target.closest('.irow');if(!row)return;const k=+row.dataset.i;
   const mv=e.target.closest('[data-mv]'),del=e.target.closest('[data-del]');
   if(mv){const j=k+ +mv.dataset.mv;if(j<0||j>=draft.ings.length)return;[draft.ings[k],draft.ings[j]]=[draft.ings[j],draft.ings[k]];renderRows();updatePreview();}
-  else if(del){draft.ings.splice(k,1);renderRows();autoEquip();updatePreview();}
+  else if(del){draft.ings.splice(k,1);renderRows();updatePreview();}
 });
 
-/* ---------- list / filter events ---------- */
+/* ---------- list / tabs / filter events ---------- */
 $('#list').addEventListener('click',e=>{
+  const t=e.target.closest('[data-toggle]');
+  if(t){const id=t.dataset.toggle;openRows.has(id)?openRows.delete(id):openRows.add(id);renderList();return;}
   const c=e.target.closest('.card');if(c){openEditor(c.dataset.id);return;}
   const a=e.target.closest('[data-act]');if(!a)return;
   if(a.dataset.act==='add')openEditor(null);else if(a.dataset.act==='clear')clearFilters();
 });
 function toggle(set,v){set.has(v)?set.delete(v):set.add(v);}
-document.querySelector('.filters').addEventListener('click',e=>{
-  const m=e.target.closest('.seg button');if(m){F.ingMode=m.dataset.mode;render();return;}
+$('#tabsBase').addEventListener('click',e=>{const b=e.target.closest('.tab');if(!b)return;activeBase=b.dataset.v;render();});
+$('#tabsTech').addEventListener('click',e=>{const b=e.target.closest('.railbtn');if(!b)return;activeTech=b.dataset.v;render();});
+document.querySelector('.filters2').addEventListener('click',e=>{
+  const m=e.target.closest('.seg button[data-mode]');if(m){F.ingMode=m.dataset.mode;render();return;}
+  const so=e.target.closest('[data-sort]');if(so){sortMode=so.dataset.sort;try{localStorage.setItem('kanpe-sort',sortMode);}catch{}renderList();return;}
+  const vw=e.target.closest('[data-view]');if(vw){viewMode=vw.dataset.view;try{localStorage.setItem('kanpe-view',viewMode);}catch{}renderList();return;}
   const b=e.target.closest('.chip');if(!b)return;const {k,v}=b.dataset;
-  if(k==='spirit')toggle(F.spirits,v);else if(k==='tech')toggle(F.techs,v);else if(k==='ing')toggle(F.ings,v);else if(k==='tag')toggle(F.tags,v);
+  if(k==='ing')toggle(F.ings,v);else if(k==='tag')toggle(F.tags,v);else if(k==='cat')toggle(F.cats,v);
   render();
 });
-function clearFilters(){F.q='';F.spirits.clear();F.techs.clear();F.tags.clear();F.ings.clear();$('#q').value='';render();}
+function clearFilters(){F.q='';F.cats.clear();F.tags.clear();F.ings.clear();activeBase='all';activeTech='all';$('#q').value='';render();}
 $('#clearF').onclick=clearFilters;
 $('#q').addEventListener('input',e=>{F.q=e.target.value;renderList();});
-$('#fab').onclick=()=>openEditor(null);
+$('#addBtn').onclick=()=>openEditor(null);
 
 /* ---------- scroll to top ---------- */
 const toTopBtn=$('#toTop');
 const reduceMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 function updateToTop(){toTopBtn.classList.toggle('show',window.scrollY>420);}
 window.addEventListener('scroll',updateToTop,{passive:true});
-window.addEventListener('resize',updateToTop);
+window.addEventListener('resize',()=>{updateToTop();syncHeaderHeight();});
 toTopBtn.onclick=()=>window.scrollTo({top:0,behavior:reduceMotion()?'auto':'smooth'});
 
 /* ---------- menu / backup ---------- */
@@ -739,7 +973,7 @@ $('#menuBtn').onclick=openMenu;
 $('#mClose').onclick=()=>$('#menu').close();
 $('#mPrint').onclick=()=>{$('#menu').close();setTimeout(()=>window.print(),50);};
 $('#mExport').onclick=()=>{
-  const data={app:'recipe-kanpe',version:1,exportedAt:new Date().toISOString(),recipes};
+  const data={app:'recipe-kanpe',version:3,exportedAt:new Date().toISOString(),recipes};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const d=new Date(),p=n=>String(n).padStart(2,'0');
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`recipe-kanpe-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}.json`;
@@ -754,7 +988,14 @@ $('#fileIn').addEventListener('change',async e=>{
   catch{toast('読み込めませんでした。カンペのバックアップ(JSON)を選んでください');return;}
   const valid=list.map(sanitizeRecipe).filter(Boolean);
   if(!valid.length){toast('有効なレシピが見つかりませんでした');return;}
-  const v=await choose(`${valid.length}件のレシピが見つかりました。\n\n「追加・上書き」: 現在のレシピを残し、同じIDのものだけ上書きします。\n「すべて置き換え」: 現在のレシピをすべて消して入れ替えます。`,
+  // 同じ名前のチェック（ファイル内 / 現在のレシピとの間）
+  const ids=new Set(valid.map(r=>r.id)), fileKeys=new Map();
+  valid.forEach(r=>{const k=nameKey(r.name);fileKeys.set(k,(fileKeys.get(k)||[]).concat(r.name));});
+  const inFile=[...fileKeys.values()].filter(a=>a.length>1).map(a=>a[0]);
+  const vsCur=[...new Set(valid.filter(r=>recipes.some(e=>!ids.has(e.id)&&nameKey(e.name)===nameKey(r.name))).map(r=>r.name))];
+  const lst=a=>a.slice(0,5).map(n=>`「${n}」`).join('')+(a.length>5?` ほか${a.length-5}件`:'');
+  const dupMsg=(inFile.length?`\n\n⚠ ファイルの中に同じ名前のレシピがあります: ${lst(inFile)}`:'')+(vsCur.length?`\n⚠ 「追加・上書き」では、今あるレシピと同じ名前になるものがあります: ${lst(vsCur)}`:'');
+  const v=await choose(`${valid.length}件のレシピが見つかりました。\n\n「追加・上書き」: 現在のレシピを残し、同じIDのものだけ上書きします。\n「すべて置き換え」: 現在のレシピをすべて消して入れ替えます。${dupMsg}`,
     [['追加・上書き','merge'],['すべて置き換え','replace','danger'],['キャンセル','no']],'バックアップから復元');
   if(v==='merge'){const m=new Map(recipes.map(r=>[r.id,r]));valid.forEach(r=>m.set(r.id,r));recipes=[...m.values()].sort(byOrder);await saveMany(valid);}
   else if(v==='replace'){recipes=valid.sort(byOrder);await replaceAll(recipes);}
@@ -763,7 +1004,7 @@ $('#fileIn').addEventListener('change',async e=>{
 });
 $('#mSeed').onclick=async()=>{
   $('#menu').close();
-  const have=new Set(recipes.map(r=>r.id));const add=SEED.filter(r=>!have.has(r.id)).map(clone);
+  const have=new Set(recipes.map(r=>r.id));const add=SEED.filter(r=>!have.has(r.id)).map(clone).map(sanitizeRecipe);
   if(!add.length){toast('初期レシピはすべて登録済みです');return;}
   add.forEach(r=>{r.order=recipes.reduce((m,x)=>Math.max(m,x.order),0)+10;recipes.push(r);});
   recipes.sort(byOrder);render();await saveMany(add);toast(`初期レシピを${add.length}件追加しました`);
@@ -782,8 +1023,6 @@ async function init(){
     }
   }else list=clone(SEED);
   recipes=list.map(sanitizeRecipe).filter(Boolean).sort(byOrder);
-  // 旧バージョンで保存したレシピ（original 項目あり / tags・equip なし）を新形式で保存し直す
-  if(db&&list.some(r=>r&&('original' in r||!Array.isArray(r.tags)||!Array.isArray(r.equip))))await saveMany(recipes);
   applyTheme();render();
   try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch{}
 }
